@@ -1,0 +1,21 @@
+<html>
+    <header>
+        <h3 id="head_h3">Cameron Kull, cak264 & Marie Williams, mcw242</h3>
+        <script src="https://d3js.org/d3.v7.min.js"></script>
+    </header>
+    <body>
+        
+
+        <script>
+            let requestData = async function(){
+                let meanIncomes = await d3.csv("mean_income.csv", d3.autoType);
+                console.log(meanIncomes);
+
+                let tuition = await d3.csv("tuition.csv", d3.autoType);
+                console.log(tuition);
+            }
+
+            requestData();
+        </script>
+    </body>
+</html>
