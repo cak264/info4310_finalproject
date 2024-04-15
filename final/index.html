@@ -4,7 +4,7 @@
         <script src="https://d3js.org/d3.v7.min.js"></script>
     </header>
     <body>
-        
+
 
         <script>
             let requestData = async function(){
@@ -13,6 +13,12 @@
 
                 let tuition = await d3.csv("tuition.csv", d3.autoType);
                 console.log(tuition);
+
+                let parentBins = await d3.csv("parent_bins.csv", d3.autoType);
+                console.log(parentBins);
+
+                let attendStats = await d3.csv("attendance.csv", d3.autoType);
+                console.log(attendStats);
             }
 
             requestData();
