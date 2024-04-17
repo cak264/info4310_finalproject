@@ -5,8 +5,21 @@
     </header>
     <body>
 
+        <div>
+            <svg width="900" height="600" id="line-chart"></svg>
+        </div>
 
         <script>
+            let lineChart = d3.select("#line-chart");
+            const lc_width = lineChart.attr("width");
+            const lc_height= lineChart.attr("height");
+            const lc_margins={top: 10, right: 10, bottom: 50, left: 50};
+            const lchartWidth = lc_width - lc_margins.left - lc_margins.right;
+            const lchartHeight = lc_height - lc_margins.top - lc_margins.bottom;
+            const lineChartArea = lineChart.append("g")
+                                           .attr("translate", `transform(${lc_margins.left}, ${lc_margins.top})`);
+
+
             let requestData = async function(){
                 let meanIncomes = await d3.csv("mean_income.csv", d3.autoType);
                 console.log(meanIncomes);
@@ -19,6 +32,12 @@
 
                 let attendStats = await d3.csv("attendance.csv", d3.autoType);
                 console.log(attendStats);
+
+                let yearExtent = d3.extent(meanIncomes, m=>m.Year);
+                
+                let yearScale = d3.scaleLinear().domain(yearExtent).range([0, lchartWidth]);
+                let lowIncomeExtent = d3.extent(meanIncomes, m=>m.current_firstQuintile);
+                console.log(lowIncomeExtent);
             }
 
             requestData();
