@@ -2,6 +2,16 @@
     <header>
         <h3 id="head_h3">Cameron Kull, cak264 & Marie Williams, mcw242</h3>
         <script src="https://d3js.org/d3.v7.min.js"></script>
+
+        <style>
+            .gridlines line {
+              stroke: #bbb;
+            }
+
+            .gridlines .domain {
+              stroke: none;
+            }
+        </style>
     </header>
     <body>
 
@@ -13,11 +23,11 @@
             let lineChart = d3.select("#line-chart");
             const lc_width = lineChart.attr("width");
             const lc_height= lineChart.attr("height");
-            const lc_margins={top: 10, right: 10, bottom: 50, left: 50};
+            const lc_margins={top: 10, right: 10, bottom: 50, left: 60};
             const lchartWidth = lc_width - lc_margins.left - lc_margins.right;
             const lchartHeight = lc_height - lc_margins.top - lc_margins.bottom;
             const lineChartArea = lineChart.append("g")
-                                           .attr("translate", `transform(${lc_margins.left}, ${lc_margins.top})`);
+                                           .attr("transform", `translate(${lc_margins.left}, ${lc_margins.top})`);
 
 
             let requestData = async function(){
@@ -33,11 +43,53 @@
                 let attendStats = await d3.csv("attendance.csv", d3.autoType);
                 console.log(attendStats);
 
+                // income and year extents and scales
                 let yearExtent = d3.extent(meanIncomes, m=>m.Year);
                 
                 let yearScale = d3.scaleLinear().domain(yearExtent).range([0, lchartWidth]);
                 let lowIncomeExtent = d3.extent(meanIncomes, m=>m.current_firstQuintile);
                 console.log(lowIncomeExtent);
+                let highIncomeExtent = d3.extent(meanIncomes, m=>m.current_fifthQuintile);
+                console.log(highIncomeExtent);
+                let middleIncomeExtent = d3.extent(meanIncomes, m=>m.current_thirdQuintile);
+                // let dollarScale = d3.scaleLinear().domain([lowIncomeExtent[0], highIncomeExtent[1]]).range([lchartHeight, 0]);
+                let dollarScale = d3.scaleLinear().domain([lowIncomeExtent[0], middleIncomeExtent[1]]).range([lchartHeight, 0]);
+
+                // axes
+                let lineLeftAxis = d3.axisLeft(dollarScale);
+                lineChart.append("g")
+                             .attr("transform", `translate(${lc_margins.left-10}, ${lc_margins.top})`)
+                             .call(lineLeftAxis);
+                let lineLeftAxisGridlines = d3.axisLeft(dollarScale)
+                                              .tickSize(-lchartWidth-10)
+                                              .tickFormat('');
+                lineChart.append("g")
+                             .attr("transform", `translate(${lc_margins.left-10}, ${lc_margins.top})`)
+                             .attr("class", "gridlines")
+                             .call(lineLeftAxisGridlines);
+
+                let lineBottomAxis = d3.axisBottom(yearScale)
+                                       .tickFormat(d3.format(".0f"));
+                lineChart.append("g")
+                             .attr("transform", `translate(${lc_margins.left}, ${lc_margins.top+lchartHeight+10})`)
+                             .call(lineBottomAxis);
+
+                // creating tuition line
+                let all_curentTuition = tuition.filter(t=> t.institution_type == "all" & t.dollar_type == "current");
+
+                const line = d3.line()
+                        .x(d => yearScale(d.year))
+                        .y(d => dollarScale(d.four_and_two_year));
+                
+                lineChartArea.append("path").datum(all_curentTuition)
+                             .join("path")
+                             .attr("class", "all_current")
+                             .attr("fill", "none")
+                             .attr("stroke", "black")
+                             .attr("stroke-width", 1)
+                             .attr("d", line);
+
+                lineChartArea.raise();
             }
 
             requestData();
