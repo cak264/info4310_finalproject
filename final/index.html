@@ -11,12 +11,27 @@
             .gridlines .domain {
               stroke: none;
             }
+
+            #vis1 {
+                display: flex;
+            }
+
+            #vis1 #filters {
+                margin-left: 30px;
+            }
+
+            #institutionInputs, #degreeInputs {
+                display: flex;
+                flex-direction: column;
+            }
+
         </style>
     </header>
     <body>
 
-        <div>
+        <div id="vis1">
             <svg width="900" height="600" id="line-chart"></svg>
+            <g id="filters"></g>
         </div>
 
         <script>
@@ -53,7 +68,7 @@
                 console.log(highIncomeExtent);
                 let middleIncomeExtent = d3.extent(meanIncomes, m=>m.current_thirdQuintile);
                 // let dollarScale = d3.scaleLinear().domain([lowIncomeExtent[0], highIncomeExtent[1]]).range([lchartHeight, 0]);
-                let dollarScale = d3.scaleLinear().domain([lowIncomeExtent[0], middleIncomeExtent[1]]).range([lchartHeight, 0]);
+                let dollarScale = d3.scaleLinear().domain([lowIncomeExtent[0], middleIncomeExtent[1]+5000]).range([lchartHeight, 0]);
 
                 // axes
                 let lineLeftAxis = d3.axisLeft(dollarScale);
@@ -74,22 +89,72 @@
                              .attr("transform", `translate(${lc_margins.left}, ${lc_margins.top+lchartHeight+10})`)
                              .call(lineBottomAxis);
 
-                // creating tuition line
-                let all_curentTuition = tuition.filter(t=> t.institution_type == "all" & t.dollar_type == "current");
-
-                const line = d3.line()
-                        .x(d => yearScale(d.year))
-                        .y(d => dollarScale(d.four_and_two_year));
-                
-                lineChartArea.append("path").datum(all_curentTuition)
-                             .join("path")
-                             .attr("class", "all_current")
-                             .attr("fill", "none")
-                             .attr("stroke", "black")
-                             .attr("stroke-width", 1)
-                             .attr("d", line);
-
                 lineChartArea.raise();
+
+                // create bars
+                lineChartArea.selectAll("rect").data(meanIncomes)
+                             .join("rect")
+                             .attr("x", m=> yearScale(m.Year)-4)
+                             .attr("y", m=> dollarScale(m.current_thirdQuintile))
+                             .attr("width", 10)
+                             .attr("height", m=> lchartHeight-dollarScale(m.current_thirdQuintile))
+                             .attr("fill", "steelblue");
+
+                // creating tuition line
+                function createLine(inst_type, dol_type, degree_length) {
+                    let filteredTuition = tuition.filter(t=> t.institution_type == inst_type & t.dollar_type == dol_type);
+
+                    let line = d3.line()
+                            .x(d => yearScale(d.year))
+                            .y(d => dollarScale(d[degree_length]));
+                    
+                    lineChartArea.append("path").datum(filteredTuition)
+                                .join("path")
+                                .attr("class", inst_type+"_"+dol_type)
+                                .attr("fill", "none")
+                                .attr("stroke", "black")
+                                .attr("stroke-width", 3)
+                                .attr("d", line);
+
+                    lineChartArea.selectAll("circle").data(filteredTuition)
+                                .join("circle")
+                                .attr("cx", d=> yearScale(d.year))
+                                .attr("cy", d=> dollarScale(d[degree_length]))
+                                .attr("r", 3)
+                                .attr("fill", "black");
+                }
+
+                createLine("all", "current", "four_and_two_year");
+
+                // adding inputs to filter panel
+                let filterPanel = d3.select("#filters");
+                filterPanel.append("h2").text("University Details");
+
+                filterPanel.append("h3").text("Dollar Value");
+                filterPanel.append("button").text("Current Dollars");
+                filterPanel.append("button").text("2021 Adjusted Dollars");
+
+                filterPanel.append("h3").text("Institution Type");
+                let institutionInputs = filterPanel.append("div").attr("id", "institutionInputs");
+                let inst_types = ["All", "Public", "Private", "Nonprofit", "For-Profit"];
+                inst_types.forEach(type => {
+                    let block = institutionInputs.append("g");
+                    block.append("input").attr("type", "checkbox").attr("id", "check1"+type);
+                    block.append("label").attr("for", "check1"+type).text(type);
+                })
+                
+
+                filterPanel.append("h3").text("Degree Length");
+                let degreeInputs = filterPanel.append("div").attr("id", "degreeInputs");
+                let degree_types = ["All", "Four Year", "Two Year"];
+                degree_types.forEach(type => {
+                    let block = degreeInputs.append("g");
+                    block.append("input").attr("type", "checkbox").attr("id", "check2"+type);
+                    block.append("label").attr("for", "check2"+type).text(type);
+                })
+                
+
+
             }
 
             requestData();
