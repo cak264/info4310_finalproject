@@ -1,0 +1,169 @@
+﻿name,par_income_lab,attend,public,tier
+Brown University,0-20,0.006062483,Private,Ivy Plus
+Brown University,20-40,0.005036757,Private,Ivy Plus
+Brown University,40-60,0.00468445,Private,Ivy Plus
+Brown University,60-70,0.005397502,Private,Ivy Plus
+Brown University,70-80,0.005443149,Private,Ivy Plus
+Brown University,80-90,0.006410452,Private,Ivy Plus
+Brown University,90-95,0.006937305,Private,Ivy Plus
+Brown University,95-96,0.010242677,Private,Ivy Plus
+Brown University,96-97,0.009203283,Private,Ivy Plus
+Brown University,97-98,0.012476109,Private,Ivy Plus
+Brown University,98-99,0.014153101,Private,Ivy Plus
+Brown University,99-99.9,0.016524874,Private,Ivy Plus
+Brown University,Top 1,0.017317615,Private,Ivy Plus
+Brown University,Top 0.1,0.022422465,Private,Ivy Plus
+Columbia University In The City Of New York,0-20,0.01082803,Private,Ivy Plus
+Columbia University In The City Of New York,20-40,0.011238966,Private,Ivy Plus
+Columbia University In The City Of New York,40-60,0.010622167,Private,Ivy Plus
+Columbia University In The City Of New York,60-70,0.008931018,Private,Ivy Plus
+Columbia University In The City Of New York,70-80,0.008667393,Private,Ivy Plus
+Columbia University In The City Of New York,80-90,0.007833496,Private,Ivy Plus
+Columbia University In The City Of New York,90-95,0.008211543,Private,Ivy Plus
+Columbia University In The City Of New York,95-96,0.009111187,Private,Ivy Plus
+Columbia University In The City Of New York,96-97,0.009840729,Private,Ivy Plus
+Columbia University In The City Of New York,97-98,0.011673247,Private,Ivy Plus
+Columbia University In The City Of New York,98-99,0.013613031,Private,Ivy Plus
+Columbia University In The City Of New York,99-99.9,0.014533797,Private,Ivy Plus
+Columbia University In The City Of New York,Top 1,0.015519165,Private,Ivy Plus
+Columbia University In The City Of New York,Top 0.1,0.023024304,Private,Ivy Plus
+Cornell University,0-20,0.012218312,Private,Ivy Plus
+Cornell University,20-40,0.01308782,Private,Ivy Plus
+Cornell University,40-60,0.011795697,Private,Ivy Plus
+Cornell University,60-70,0.011104289,Private,Ivy Plus
+Cornell University,70-80,0.009847728,Private,Ivy Plus
+Cornell University,80-90,0.01081537,Private,Ivy Plus
+Cornell University,90-95,0.010348632,Private,Ivy Plus
+Cornell University,95-96,0.011799295,Private,Ivy Plus
+Cornell University,96-97,0.013487599,Private,Ivy Plus
+Cornell University,97-98,0.014321391,Private,Ivy Plus
+Cornell University,98-99,0.013989284,Private,Ivy Plus
+Cornell University,99-99.9,0.016592866,Private,Ivy Plus
+Cornell University,Top 1,0.016954012,Private,Ivy Plus
+Cornell University,Top 0.1,0.019525487,Private,Ivy Plus
+Dartmouth College,0-20,0.005269548,Private,Ivy Plus
+Dartmouth College,20-40,0.004966975,Private,Ivy Plus
+Dartmouth College,40-60,0.005647434,Private,Ivy Plus
+Dartmouth College,60-70,0.005970942,Private,Ivy Plus
+Dartmouth College,70-80,0.005238361,Private,Ivy Plus
+Dartmouth College,80-90,0.005570201,Private,Ivy Plus
+Dartmouth College,90-95,0.005400448,Private,Ivy Plus
+Dartmouth College,95-96,0.005581952,Private,Ivy Plus
+Dartmouth College,96-97,0.007731209,Private,Ivy Plus
+Dartmouth College,97-98,0.007701324,Private,Ivy Plus
+Dartmouth College,98-99,0.009704736,Private,Ivy Plus
+Dartmouth College,99-99.9,0.016949276,Private,Ivy Plus
+Dartmouth College,Top 1,0.018967163,Private,Ivy Plus
+Dartmouth College,Top 0.1,0.032102767,Private,Ivy Plus
+Duke University,0-20,0.005324914,Private,Ivy Plus
+Duke University,20-40,0.005450534,Private,Ivy Plus
+Duke University,40-60,0.005707197,Private,Ivy Plus
+Duke University,60-70,0.005262228,Private,Ivy Plus
+Duke University,70-80,0.006083361,Private,Ivy Plus
+Duke University,80-90,0.006552733,Private,Ivy Plus
+Duke University,90-95,0.007480927,Private,Ivy Plus
+Duke University,95-96,0.007224821,Private,Ivy Plus
+Duke University,96-97,0.008455657,Private,Ivy Plus
+Duke University,97-98,0.011622772,Private,Ivy Plus
+Duke University,98-99,0.012496449,Private,Ivy Plus
+Duke University,99-99.9,0.019589972,Private,Ivy Plus
+Duke University,Top 1,0.020571183,Private,Ivy Plus
+Duke University,Top 0.1,0.02822981,Private,Ivy Plus
+Harvard University,0-20,0.035773583,Private,Ivy Plus
+Harvard University,20-40,0.033579871,Private,Ivy Plus
+Harvard University,40-60,0.02226796,Private,Ivy Plus
+Harvard University,60-70,0.019233868,Private,Ivy Plus
+Harvard University,70-80,0.016676204,Private,Ivy Plus
+Harvard University,80-90,0.015635561,Private,Ivy Plus
+Harvard University,90-95,0.015905512,Private,Ivy Plus
+Harvard University,95-96,0.015460062,Private,Ivy Plus
+Harvard University,96-97,0.018701101,Private,Ivy Plus
+Harvard University,97-98,0.023877496,Private,Ivy Plus
+Harvard University,98-99,0.020868978,Private,Ivy Plus
+Harvard University,99-99.9,0.028537508,Private,Ivy Plus
+Harvard University,Top 1,0.031020455,Private,Ivy Plus
+Harvard University,Top 0.1,0.045827072,Private,Ivy Plus
+Massachusetts Institute Of Technology,0-20,0.016758166,Private,Ivy Plus
+Massachusetts Institute Of Technology,20-40,0.013722787,Private,Ivy Plus
+Massachusetts Institute Of Technology,40-60,0.014583995,Private,Ivy Plus
+Massachusetts Institute Of Technology,60-70,0.012194498,Private,Ivy Plus
+Massachusetts Institute Of Technology,70-80,0.012216954,Private,Ivy Plus
+Massachusetts Institute Of Technology,80-90,0.012630523,Private,Ivy Plus
+Massachusetts Institute Of Technology,90-95,0.015277062,Private,Ivy Plus
+Massachusetts Institute Of Technology,95-96,0.016033344,Private,Ivy Plus
+Massachusetts Institute Of Technology,96-97,0.01858899,Private,Ivy Plus
+Massachusetts Institute Of Technology,97-98,0.014719711,Private,Ivy Plus
+Massachusetts Institute Of Technology,98-99,0.012821614,Private,Ivy Plus
+Massachusetts Institute Of Technology,99-99.9,0.013226325,Private,Ivy Plus
+Massachusetts Institute Of Technology,Top 1,0.013489231,Private,Ivy Plus
+Massachusetts Institute Of Technology,Top 0.1,0.016107565,Private,Ivy Plus
+Princeton University,0-20,0.01347402,Private,Ivy Plus
+Princeton University,20-40,0.014516513,Private,Ivy Plus
+Princeton University,40-60,0.015001548,Private,Ivy Plus
+Princeton University,60-70,0.011191161,Private,Ivy Plus
+Princeton University,70-80,0.011767614,Private,Ivy Plus
+Princeton University,80-90,0.013963197,Private,Ivy Plus
+Princeton University,90-95,0.01445185,Private,Ivy Plus
+Princeton University,95-96,0.015996249,Private,Ivy Plus
+Princeton University,96-97,0.013131108,Private,Ivy Plus
+Princeton University,97-98,0.01603812,Private,Ivy Plus
+Princeton University,98-99,0.016708748,Private,Ivy Plus
+Princeton University,99-99.9,0.019735184,Private,Ivy Plus
+Princeton University,Top 1,0.021002423,Private,Ivy Plus
+Princeton University,Top 0.1,0.028985394,Private,Ivy Plus
+Stanford University,0-20,0.015156368,Private,Ivy Plus
+Stanford University,20-40,0.012427915,Private,Ivy Plus
+Stanford University,40-60,0.011893802,Private,Ivy Plus
+Stanford University,60-70,0.009794605,Private,Ivy Plus
+Stanford University,70-80,0.009845215,Private,Ivy Plus
+Stanford University,80-90,0.009915769,Private,Ivy Plus
+Stanford University,90-95,0.010006097,Private,Ivy Plus
+Stanford University,95-96,0.011573368,Private,Ivy Plus
+Stanford University,96-97,0.013688022,Private,Ivy Plus
+Stanford University,97-98,0.016039237,Private,Ivy Plus
+Stanford University,98-99,0.018649569,Private,Ivy Plus
+Stanford University,99-99.9,0.024119224,Private,Ivy Plus
+Stanford University,Top 1,0.027200142,Private,Ivy Plus
+Stanford University,Top 0.1,0.046069298,Private,Ivy Plus
+University Of Chicago,0-20,0.01108851,Private,Ivy Plus
+University Of Chicago,20-40,0.009450969,Private,Ivy Plus
+University Of Chicago,40-60,0.010737932,Private,Ivy Plus
+University Of Chicago,60-70,0.008265502,Private,Ivy Plus
+University Of Chicago,70-80,0.008243035,Private,Ivy Plus
+University Of Chicago,80-90,0.0094838,Private,Ivy Plus
+University Of Chicago,90-95,0.009712229,Private,Ivy Plus
+University Of Chicago,95-96,0.010188866,Private,Ivy Plus
+University Of Chicago,96-97,0.011665549,Private,Ivy Plus
+University Of Chicago,97-98,0.012289801,Private,Ivy Plus
+University Of Chicago,98-99,0.014703619,Private,Ivy Plus
+University Of Chicago,99-99.9,0.017094927,Private,Ivy Plus
+University Of Chicago,Top 1,0.01619165,Private,Ivy Plus
+University Of Chicago,Top 0.1,0.010814705,Private,Ivy Plus
+University Of Pennsylvania,0-20,0.008748323,Private,Ivy Plus
+University Of Pennsylvania,20-40,0.006925762,Private,Ivy Plus
+University Of Pennsylvania,40-60,0.008207909,Private,Ivy Plus
+University Of Pennsylvania,60-70,0.008380869,Private,Ivy Plus
+University Of Pennsylvania,70-80,0.009678251,Private,Ivy Plus
+University Of Pennsylvania,80-90,0.010709144,Private,Ivy Plus
+University Of Pennsylvania,90-95,0.010644318,Private,Ivy Plus
+University Of Pennsylvania,95-96,0.012991782,Private,Ivy Plus
+University Of Pennsylvania,96-97,0.013293725,Private,Ivy Plus
+University Of Pennsylvania,97-98,0.015475733,Private,Ivy Plus
+University Of Pennsylvania,98-99,0.019787228,Private,Ivy Plus
+University Of Pennsylvania,99-99.9,0.02801792,Private,Ivy Plus
+University Of Pennsylvania,Top 1,0.029811123,Private,Ivy Plus
+University Of Pennsylvania,Top 0.1,0.042691458,Private,Ivy Plus
+Yale University,0-20,0.014728111,Private,Ivy Plus
+Yale University,20-40,0.017146273,Private,Ivy Plus
+Yale University,40-60,0.013127099,Private,Ivy Plus
+Yale University,60-70,0.012554349,Private,Ivy Plus
+Yale University,70-80,0.013070072,Private,Ivy Plus
+Yale University,80-90,0.012480339,Private,Ivy Plus
+Yale University,90-95,0.012232793,Private,Ivy Plus
+Yale University,95-96,0.014141466,Private,Ivy Plus
+Yale University,96-97,0.013824375,Private,Ivy Plus
+Yale University,97-98,0.016245347,Private,Ivy Plus
+Yale University,98-99,0.019719949,Private,Ivy Plus
+Yale University,99-99.9,0.025880974,Private,Ivy Plus
+Yale University,Top 1,0.028459469,Private,Ivy Plus
+Yale University,Top 0.1,0.045336328,Private,Ivy Plus

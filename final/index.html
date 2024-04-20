@@ -52,15 +52,15 @@
                 let tuition = await d3.csv("tuition.csv", d3.autoType);
                 console.log(tuition);
 
-                let parentBins = await d3.csv("parent_bins.csv", d3.autoType);
+                let parentBins = await d3.csv("parent_incomes.csv", d3.autoType);
                 console.log(parentBins);
 
-                let attendStats = await d3.csv("attendance.csv", d3.autoType);
+                let attendStats = await d3.csv("top139_attend.csv", d3.autoType);
                 console.log(attendStats);
 
                 // income and year extents and scales
                 let yearExtent = d3.extent(meanIncomes, m=>m.Year);
-                
+
                 let yearScale = d3.scaleLinear().domain(yearExtent).range([0, lchartWidth]);
                 let lowIncomeExtent = d3.extent(meanIncomes, m=>m.current_firstQuintile);
                 console.log(lowIncomeExtent);
@@ -107,7 +107,7 @@
                     let line = d3.line()
                             .x(d => yearScale(d.year))
                             .y(d => dollarScale(d[degree_length]));
-                    
+
                     lineChartArea.append("path").datum(filteredTuition)
                                 .join("path")
                                 .attr("class", inst_type+"_"+dol_type)
@@ -142,7 +142,7 @@
                     block.append("input").attr("type", "checkbox").attr("id", "check1"+type);
                     block.append("label").attr("for", "check1"+type).text(type);
                 })
-                
+
 
                 filterPanel.append("h3").text("Degree Length");
                 let degreeInputs = filterPanel.append("div").attr("id", "degreeInputs");
@@ -152,7 +152,7 @@
                     block.append("input").attr("type", "checkbox").attr("id", "check2"+type);
                     block.append("label").attr("for", "check2"+type).text(type);
                 })
-                
+
 
 
             }
