@@ -63,9 +63,7 @@
 
                 let yearScale = d3.scaleLinear().domain(yearExtent).range([0, lchartWidth]);
                 let lowIncomeExtent = d3.extent(meanIncomes, m=>m.current_firstQuintile);
-                console.log(lowIncomeExtent);
                 let highIncomeExtent = d3.extent(meanIncomes, m=>m.current_fifthQuintile);
-                console.log(highIncomeExtent);
                 let middleIncomeExtent = d3.extent(meanIncomes, m=>m.current_thirdQuintile);
                 // let dollarScale = d3.scaleLinear().domain([lowIncomeExtent[0], highIncomeExtent[1]]).range([lchartHeight, 0]);
                 let dollarScale = d3.scaleLinear().domain([lowIncomeExtent[0], middleIncomeExtent[1]+5000]).range([lchartHeight, 0]);
@@ -91,17 +89,25 @@
 
                 lineChartArea.raise();
 
-                // create bars
-                lineChartArea.selectAll("rect").data(meanIncomes)
-                             .join("rect")
-                             .attr("x", m=> yearScale(m.Year)-4)
-                             .attr("y", m=> dollarScale(m.current_thirdQuintile))
-                             .attr("width", 10)
-                             .attr("height", m=> lchartHeight-dollarScale(m.current_thirdQuintile))
-                             .attr("fill", "steelblue");
+
 
                 // creating tuition line
-                function createLine(inst_type, dol_type, degree_length) {
+                function updateBars(dol_type) {
+
+                    // create bars
+                    lineChartArea.selectAll("rect").data(meanIncomes)
+                                .join("rect")
+                                .transition().duration(500)
+                                .attr("x", m=> yearScale(m.Year)-4)
+                                .attr("y", m=> dollarScale(m[dol_type+"_thirdQuintile"]))
+                                .attr("width", 10)
+                                .attr("height", m=> lchartHeight-dollarScale(m[dol_type+"_thirdQuintile"]))
+                                .attr("fill", "steelblue");
+
+                }
+
+                function createLine(inst_type, dol_type, degree_length){
+
                     let filteredTuition = tuition.filter(t=> t.institution_type == inst_type & t.dollar_type == dol_type);
 
                     let line = d3.line()
@@ -110,29 +116,47 @@
 
                     lineChartArea.append("path").datum(filteredTuition)
                                 .join("path")
-                                .attr("class", inst_type+"_"+dol_type)
+                                .attr("id", inst_type+"_"+dol_type)
+                                .attr("class", "tuitionLine")
                                 .attr("fill", "none")
                                 .attr("stroke", "black")
                                 .attr("stroke-width", 3)
                                 .attr("d", line);
 
-                    lineChartArea.selectAll("circle").data(filteredTuition)
-                                .join("circle")
-                                .attr("cx", d=> yearScale(d.year))
-                                .attr("cy", d=> dollarScale(d[degree_length]))
-                                .attr("r", 3)
-                                .attr("fill", "black");
+                    // lineChartArea.selectAll("circle").data(filteredTuition)
+                    //             .join("circle")
+                    //             .attr("cx", d=> yearScale(d.year))
+                    //             .attr("cy", d=> dollarScale(d[degree_length]))
+                    //             .attr("r", 3)
+                    //             .attr("fill", "black");
+                };
+
+                function deleteLine(inst_type, dol_type) {
+                    var line = d3.select("path#"+inst_type+"_"+dol_type)
+                    if (line) {
+                        line.remove(); // Remove the path element from the DOM
+                    } else {
+                        console.log("Path element not found.");
+                    }
+                };
+
+                function deleteAllLines(){
+                    d3.selectAll("path.tuitionLine").remove();
                 }
 
-                createLine("all", "current", "four_and_two_year");
+                let currentDollarType = "current";
+                let currentDegreeLength = "four_and_two_year";
+                updateBars(currentDollarType);
+                createLine("all", currentDollarType, currentDegreeLength);
+
 
                 // adding inputs to filter panel
                 let filterPanel = d3.select("#filters");
                 filterPanel.append("h2").text("University Details");
 
                 filterPanel.append("h3").text("Dollar Value");
-                filterPanel.append("button").text("Current Dollars");
-                filterPanel.append("button").text("2021 Adjusted Dollars");
+                filterPanel.append("button").text("Current Dollars").attr("id", "currentButton");
+                filterPanel.append("button").text("2021 Adjusted Dollars").attr("id", "adjustedButton");
 
                 filterPanel.append("h3").text("Institution Type");
                 let institutionInputs = filterPanel.append("div").attr("id", "institutionInputs");
@@ -141,16 +165,93 @@
                     let block = institutionInputs.append("g");
                     block.append("input").attr("type", "checkbox").attr("id", "check1"+type);
                     block.append("label").attr("for", "check1"+type).text(type);
-                })
-
+                });
+                d3.select("#check1All").property("checked", true);
 
                 filterPanel.append("h3").text("Degree Length");
                 let degreeInputs = filterPanel.append("div").attr("id", "degreeInputs");
-                let degree_types = ["All", "Four Year", "Two Year"];
+                let degree_types = ["All", "Four", "Two"];
                 degree_types.forEach(type => {
                     let block = degreeInputs.append("g");
                     block.append("input").attr("type", "checkbox").attr("id", "check2"+type);
-                    block.append("label").attr("for", "check2"+type).text(type);
+                    block.append("label").attr("for", "check2"+type).text(type+" Year");
+                })
+                d3.select("#check2All").property("checked", true);
+
+                // button interactivity
+                d3.select("#currentButton").on("click", function(){
+                    currentDollarType = "current";
+                    deleteAllLines();
+                    updateBars(currentDollarType);
+                    addSelectedLines();
+                })
+
+                d3.select("#adjustedButton").on("click", function(){
+                    currentDollarType = "adjusted";
+                    deleteAllLines();
+                    updateBars(currentDollarType);
+                    addSelectedLines();
+                })
+
+                // checkbox interactivity
+
+                function addSelectedLines(){
+                    let selectedInputs = d3.selectAll("input[type=checkbox]:checked");
+                    selectedInputs = selectedInputs.nodes();
+                    selectedInputs.forEach(input =>{
+                        let inputSection = input.id[5];
+                        let type = input.id.substring(6).toLowerCase();
+                        if (inputSection == 1){
+                            if (type=="nonprofit" || type=="for-profit"){
+                                createLine("private-"+type, currentDollarType, currentDegreeLength);
+                            }
+                            else{createLine(type, currentDollarType, currentDegreeLength);}
+                        };
+                    })
+                }
+
+                d3.selectAll("input").on("click", function(){
+                    let inputSection = this.id[5];
+                    let type = this.id.substring(6).toLowerCase();
+                    if (inputSection == 1){
+                        if (this.checked){
+                            if (type=="nonprofit" || type=="for-profit"){
+                                createLine("private-"+type, currentDollarType, currentDegreeLength);
+                            }
+                            else{createLine(type, currentDollarType, currentDegreeLength);}
+                        }
+                        else {
+                            if (type=="nonprofit" || type=="for-profit"){
+                                deleteLine("private-"+type, currentDollarType);
+                            }
+                            else{deleteLine(type, currentDollarType);}
+                        }
+                    }
+                    else{
+                        if (type == "all"){
+                            currentDegreeLength="four_and_two_year";
+                            d3.select("#check2Four").property("checked", false);
+                            d3.select("#check2Two").property("checked", false);
+                            deleteAllLines(type, currentDollarType);
+                            addSelectedLines();
+                        }
+                        else if (type == "four"){
+                            let length = type+"_year"
+                            currentDegreeLength=length;
+                            d3.select("#check2All").property("checked", false);
+                            d3.select("#check2Two").property("checked", false);
+                            deleteAllLines();
+                            addSelectedLines();
+                        }
+                        else{
+                            let length = type+"_year"
+                            currentDegreeLength=length;
+                            d3.select("#check2All").property("checked", false);
+                            d3.select("#check2Four").property("checked", false);
+                            deleteAllLines();
+                            addSelectedLines();
+                        }
+                    }
                 })
 
 
