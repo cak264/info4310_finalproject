@@ -20,9 +20,19 @@
                 margin-left: 30px;
             }
 
-            #institutionInputs, #degreeInputs {
+            #institutionInputs, #degreeInputs, #binInputs {
                 display: flex;
                 flex-direction: column;
+            }
+
+            #ivy-main, #ivy_filters {
+                float: left;
+            }
+
+            #ivy_filters {
+                width: 400px;
+                height: 600px;
+                margin-left: 30px;
             }
 
         </style>
@@ -33,6 +43,11 @@
             <svg width="900" height="600" id="line-chart"></svg>
             <g id="filters"></g>
         </div>
+        <svg width="900" height="600" id="ivy-main"></svg>
+        <div id ="ivy_filters">
+            <h2>Filters</h2>
+        </div>
+
 
         <script>
             let lineChart = d3.select("#line-chart");
@@ -43,6 +58,16 @@
             const lchartHeight = lc_height - lc_margins.top - lc_margins.bottom;
             const lineChartArea = lineChart.append("g")
                                            .attr("transform", `translate(${lc_margins.left}, ${lc_margins.top})`);
+
+            // comment
+            let ivyChart = d3.select("#ivy-main");
+            const ivy_width = ivyChart.attr("width");
+            const ivy_height= ivyChart.attr("height");
+            const ivy_margins={top: 10, right: 10, bottom: 80, left: 50};
+            const ivyChartWidth = ivy_width - ivy_margins.left - ivy_margins.right;
+            const ivyChartHeight = ivy_height - ivy_margins.top - ivy_margins.bottom;
+            const ivyChartArea = ivyChart.append("g")
+                                           .attr("transform", `translate(${ivy_margins.left}, ${ivy_margins.top})`);
 
 
             let requestData = async function(){
@@ -253,6 +278,82 @@
                         }
                     }
                 })
+
+
+                // Ivy filters
+                let IvyFilters = d3.select("#ivy_filters");
+                let binInputs = IvyFilters.append("div").attr("id", "binInputs");
+
+                let income_bins = {
+                    "Q1": "Lowest 20%",
+                    "Q2": "80-60th Percentile",
+                    "Q3": "60-40th Percentile",
+                    "Q4": "40-20th Percentile",
+                    "Q5": "Top 20%",
+                    "0.1": "Top 10%",
+                    "0.05": "Top 5%",
+                    "0.01": "Top 1%",
+                    "0.001": "Top 0.1%"
+                };
+
+                Object.entries(income_bins).forEach(([key, value]) => {
+                    let block = binInputs.append("g");
+                    let input = block.append("input")
+                         .attr("type", "radio")
+                         .attr("id", "check1" + key)
+                         .attr("name", "income_radio")
+                         .attr("value", key);
+                    if (key === "Q1") {
+                        input.attr("checked", true);
+                    }
+                    block.append("label")
+                         .attr("for", "check1" + key)
+                         .text(value);
+                });
+
+
+                // ivy chart
+                let q1Extent = d3.extent(parentBins, p=>p.par_q1);
+
+                let schools = parentBins.map(s=>s.name);
+                console.log(schools);
+
+                let schoolScale = d3.scaleBand().domain(schools).range([0, ivyChartWidth]).padding(0.1);
+                let percentScale = d3.scaleLinear().domain([0, q1Extent[1]+0.02]).range([ivyChartHeight, 0]);
+
+
+                let ivyLeftAxis = d3.axisLeft(percentScale);
+                ivyChart.append("g")
+                             .attr("transform", `translate(${ivy_margins.left-10}, ${ivy_margins.top})`)
+                             .call(ivyLeftAxis);
+                let ivyLeftAxisGridlines = d3.axisLeft(percentScale)
+                                              .tickSize(-ivyChartWidth-10)
+                                              .tickFormat('');
+                ivyChart.append("g")
+                             .attr("transform", `translate(${ivy_margins.left-10}, ${ivy_margins.top})`)
+                             .attr("class", "gridlines")
+                             .call(ivyLeftAxisGridlines);
+
+                // text or icons?
+                let ivyBottomAxis = d3.axisBottom(schoolScale);
+                ivyChart.append("g")
+                             .attr("transform", `translate(${ivy_margins.left}, ${ivy_margins.top+ivyChartHeight+10})`)
+                             .call(ivyBottomAxis)
+                             .selectAll("text")
+                                .style("text-anchor", "end")
+                                .attr("dx", "-.8em")
+                                .attr("dy", ".15em")
+                                .attr("transform", "rotate(-55)" );
+
+                ivyChartArea.raise();
+
+                ivyChartArea.selectAll("rect").data(parentBins)
+                            .join("rect")
+                            .attr("x", s=> schoolScale(s.name)+10)
+                            .attr("y", p=> percentScale(p.par_q1))
+                            .attr("width", 35)
+                            .attr("height", p=> ivyChartHeight-percentScale(p.par_q1))
+                            .attr("fill", "steelblue");
 
 
 
