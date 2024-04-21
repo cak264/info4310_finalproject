@@ -285,15 +285,15 @@
                 let binInputs = IvyFilters.append("div").attr("id", "binInputs");
 
                 let income_bins = {
-                    "Q1": "Lowest 20%",
-                    "Q2": "80-60th Percentile",
-                    "Q3": "60-40th Percentile",
-                    "Q4": "40-20th Percentile",
-                    "Q5": "Top 20%",
-                    "0.1": "Top 10%",
-                    "0.05": "Top 5%",
-                    "0.01": "Top 1%",
-                    "0.001": "Top 0.1%"
+                    "par_q1": "Lowest 20%",
+                    "par_q2": "80-60th Percentile",
+                    "par_q3": "60-40th Percentile",
+                    "par_q4": "40-20th Percentile",
+                    "par_q5": "Top 20%",
+                    "par_top1pc": "Top 10%",
+                    "par_top5pc": "Top 5%",
+                    "par_top10pc": "Top 1%",
+                    "par_toppt1pc": "Top 0.1%"
                 };
 
                 Object.entries(income_bins).forEach(([key, value]) => {
@@ -301,9 +301,9 @@
                     let input = block.append("input")
                          .attr("type", "radio")
                          .attr("id", "check1" + key)
-                         .attr("name", "income_radio")
+                         .attr("class", "income_radio")
                          .attr("value", key);
-                    if (key === "Q1") {
+                    if (key === "par_q1") {
                         input.attr("checked", true);
                     }
                     block.append("label")
@@ -313,47 +313,64 @@
 
 
                 // ivy chart
-                let q1Extent = d3.extent(parentBins, p=>p.par_q1);
 
-                let schools = parentBins.map(s=>s.name);
-                console.log(schools);
+                function updateChart(selectedOption) {
+                    let schools = parentBins.map(s=>s.name);
+                    // console.log(schools);
+                    let schoolScale = d3.scaleBand().domain(schools).range([0, ivyChartWidth]).padding(0.1);
 
-                let schoolScale = d3.scaleBand().domain(schools).range([0, ivyChartWidth]).padding(0.1);
-                let percentScale = d3.scaleLinear().domain([0, q1Extent[1]+0.02]).range([ivyChartHeight, 0]);
+                    let extent = d3.extent(parentBins, p => p[selectedOption]);
+                    let percentScale = d3.scaleLinear().domain([0, extent[1] + 0.02]).range([ivyChartHeight, 0]);
 
+                    ivyChart.selectAll(".left-axis, .gridlines, .bottom-axis").remove();
 
-                let ivyLeftAxis = d3.axisLeft(percentScale);
-                ivyChart.append("g")
-                             .attr("transform", `translate(${ivy_margins.left-10}, ${ivy_margins.top})`)
-                             .call(ivyLeftAxis);
-                let ivyLeftAxisGridlines = d3.axisLeft(percentScale)
-                                              .tickSize(-ivyChartWidth-10)
-                                              .tickFormat('');
-                ivyChart.append("g")
-                             .attr("transform", `translate(${ivy_margins.left-10}, ${ivy_margins.top})`)
-                             .attr("class", "gridlines")
-                             .call(ivyLeftAxisGridlines);
+                    let ivyLeftAxis = d3.axisLeft(percentScale);
+                    ivyChart.append("g")
+                                .attr("class", "left-axis")
+                                .attr("transform", `translate(${ivy_margins.left-10}, ${ivy_margins.top})`)
+                                .call(ivyLeftAxis);
+                    let ivyLeftAxisGridlines = d3.axisLeft(percentScale)
+                                                .tickSize(-ivyChartWidth-10)
+                                                .tickFormat('');
+                    ivyChart.append("g")
+                                .attr("transform", `translate(${ivy_margins.left-10}, ${ivy_margins.top})`)
+                                .attr("class", "gridlines")
+                                .call(ivyLeftAxisGridlines);
 
-                // text or icons?
-                let ivyBottomAxis = d3.axisBottom(schoolScale);
-                ivyChart.append("g")
-                             .attr("transform", `translate(${ivy_margins.left}, ${ivy_margins.top+ivyChartHeight+10})`)
-                             .call(ivyBottomAxis)
-                             .selectAll("text")
-                                .style("text-anchor", "end")
-                                .attr("dx", "-.8em")
-                                .attr("dy", ".15em")
-                                .attr("transform", "rotate(-55)" );
+                    // text or icons?
+                    let ivyBottomAxis = d3.axisBottom(schoolScale);
+                    ivyChart.append("g")
+                                .attr("class", "bottom-axis")
+                                .attr("transform", `translate(${ivy_margins.left}, ${ivy_margins.top+ivyChartHeight+10})`)
+                                .call(ivyBottomAxis)
+                                .selectAll("text")
+                                    .style("text-anchor", "end")
+                                    .attr("dx", "-.8em")
+                                    .attr("dy", ".15em")
+                                    .attr("transform", "rotate(-55)" );
 
-                ivyChartArea.raise();
+                    ivyChartArea.raise();
 
-                ivyChartArea.selectAll("rect").data(parentBins)
-                            .join("rect")
-                            .attr("x", s=> schoolScale(s.name)+10)
-                            .attr("y", p=> percentScale(p.par_q1))
-                            .attr("width", 35)
-                            .attr("height", p=> ivyChartHeight-percentScale(p.par_q1))
-                            .attr("fill", "steelblue");
+                    ivyChartArea.selectAll("rect").data(parentBins)
+                                .join("rect")
+                                .transition().duration(500)
+                                .attr("x", s => schoolScale(s.name) + 10)
+                                .attr("y", p => percentScale(p[selectedOption]))
+                                .attr("width", 35)
+                                .attr("height", p => ivyChartHeight - percentScale(p[selectedOption]))
+                                .attr("fill", "steelblue");
+                }
+
+                updateChart("par_q1");
+
+                d3.selectAll('input[type=radio][class=income_radio]').on('click', function() {
+
+                    d3.selectAll('input[type=radio][class=income_radio]')
+                        .filter(function() { return this !== event.target; })
+                        .property('checked', false);
+
+                    updateChart(this.value);
+                });
 
 
 
