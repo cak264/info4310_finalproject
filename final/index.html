@@ -300,15 +300,16 @@
                 let binInputs = IvyFilters.append("div").attr("id", "binInputs");
 
                 let income_bins = {
-                    "par_q1": "Lowest 20%",
-                    "par_q2": "80-60th Percentile",
-                    "par_q3": "60-40th Percentile",
-                    "par_q4": "40-20th Percentile",
-                    "par_q5": "Top 20%",
-                    "par_top1pc": "Top 10%",
+                    "par_toppt1pc": "Top 0.1%",
+                    "par_top1pc": "Top 1%",
                     "par_top5pc": "Top 5%",
-                    "par_top10pc": "Top 1%",
-                    "par_toppt1pc": "Top 0.1%"
+                    "par_top10pc": "Top 10%",
+                    "par_q5": "Top 20%",
+                    "par_q4": "20-40th Percentile",
+                    "par_q3": "40-60th Percentile",
+                    "par_q2": "60-80th Percentile",
+                    "par_q1": "Lowest 20%",
+
                 };
 
                 Object.entries(income_bins).forEach(([key, value]) => {
