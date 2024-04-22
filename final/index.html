@@ -25,13 +25,13 @@
                 flex-direction: column;
             }
 
-            #ivy-main, #ivy_filters {
+            #ivy-main, #ivy_filters, #ivy-bonus, #ivy_bonus_filters {
                 float: left;
             }
 
-            #ivy_filters {
-                width: 400px;
-                height: 600px;
+            #ivy_filters, #ivy_bonus_filters {
+                width: 300px;
+                height: 400px;
                 margin-left: 30px;
             }
 
@@ -48,6 +48,11 @@
             <h2>Filters</h2>
         </div>
 
+        <svg width="600" height="400" id="ivy-bonus"></svg>
+        <div id ="ivy_bonus_filters">
+            <h2>Filters</h2>
+        </div>
+
 
         <script>
             let lineChart = d3.select("#line-chart");
@@ -59,7 +64,6 @@
             const lineChartArea = lineChart.append("g")
                                            .attr("transform", `translate(${lc_margins.left}, ${lc_margins.top})`);
 
-            // comment
             let ivyChart = d3.select("#ivy-main");
             const ivy_width = ivyChart.attr("width");
             const ivy_height= ivyChart.attr("height");
@@ -68,6 +72,17 @@
             const ivyChartHeight = ivy_height - ivy_margins.top - ivy_margins.bottom;
             const ivyChartArea = ivyChart.append("g")
                                            .attr("transform", `translate(${ivy_margins.left}, ${ivy_margins.top})`);
+
+            // comment
+            let ivyBChart = d3.select("#ivy-bonus");
+            const ivy_Bwidth = ivyBChart.attr("width");
+            const ivy_Bheight= ivyBChart.attr("height");
+            const ivy_Bmargins={top: 10, right: 10, bottom: 50, left: 50};
+            const ivyBChartWidth = ivy_Bwidth - ivy_Bmargins.left - ivy_Bmargins.right;
+            const ivyBChartHeight = ivy_Bheight - ivy_Bmargins.top - ivy_Bmargins.bottom;
+            const ivyBChartArea = ivyBChart.append("g")
+                                           .attr("transform", `translate(${ivy_Bmargins.left}, ${ivy_Bmargins.top})`);
+
 
 
             let requestData = async function(){
@@ -371,6 +386,50 @@
 
                     updateChart(this.value);
                 });
+
+                // ivy bonus chart
+                let qScale = d3.scaleBand().domain(['Q1', 'Q2', 'Q3', 'Q4', 'Q5']).range([0, ivyBChartWidth]).padding(0.1);
+                let maxPct = d3.max(parentBins, d => d3.max([d.par_q1, d.par_q2, d.par_q3, d.par_q4, d.par_q5]));
+
+                let percentBScale = d3.scaleLinear().domain([0, maxPct + 0.02]).range([ivyBChartHeight, 0]);
+
+                // ivyChart.selectAll(".left-axis, .gridlines, .bottom-axis").remove();
+
+                let ivyBLeftAxis = d3.axisLeft(percentBScale);
+                ivyBChart.append("g")
+                            .attr("class", "left-axis")
+                            .attr("transform", `translate(${ivy_Bmargins.left-10}, ${ivy_Bmargins.top})`)
+                            .call(ivyBLeftAxis);
+                let ivyBLeftAxisGridlines = d3.axisLeft(percentBScale)
+                                            .tickSize(-ivyBChartWidth-10)
+                                            .tickFormat('');
+                ivyBChart.append("g")
+                            .attr("transform", `translate(${ivy_Bmargins.left-10}, ${ivy_Bmargins.top})`)
+                            .attr("class", "gridlines")
+                            .call(ivyBLeftAxisGridlines);
+
+                let ivyBBottomAxis = d3.axisBottom(qScale);
+                ivyBChart.append("g")
+                            .attr("class", "bottom-axis")
+                            .attr("transform", `translate(${ivy_Bmargins.left}, ${ivy_Bmargins.top+ivyBChartHeight+10})`)
+                            .call(ivyBBottomAxis);
+
+
+                ivyBChartArea.raise();
+
+                // ivyBChartArea.selectAll("g").data(parentBins)
+                //             .enter()
+                //             .selectAll("rect")
+                //             .data(d => keys.map(key => ({ school: d.school, value: d[key] })))
+                //             .join("rect")
+                //
+                //             .transition().duration(500)
+                //             .attr("x", s => schoolScale(s.name) + 10)
+                //             .attr("y", p => percentScale(p.q1))
+                //             .attr("width", 35)
+                //             .attr("height", p => ivyBChartHeight - percentScale(p.q1))
+                //             .attr("fill", "steelblue");
+
 
 
 
