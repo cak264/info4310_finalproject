@@ -417,19 +417,24 @@
 
                 ivyBChartArea.raise();
 
-                // ivyBChartArea.selectAll("g").data(parentBins)
-                //             .enter()
-                //             .selectAll("rect")
-                //             .data(d => keys.map(key => ({ school: d.school, value: d[key] })))
-                //             .join("rect")
-                //
-                //             .transition().duration(500)
-                //             .attr("x", s => schoolScale(s.name) + 10)
-                //             .attr("y", p => percentScale(p.q1))
-                //             .attr("width", 35)
-                //             .attr("height", p => ivyBChartHeight - percentScale(p.q1))
-                //             .attr("fill", "steelblue");
-
+                ivyBChartArea.selectAll("rect")
+                    .data(parentBins.filter(d => d.name === "Yale"))
+                    .join("g")
+                    .selectAll("rect")
+                    .data(d => {
+                        let dataArr = [];
+                        ["par_q1", "par_q2", "par_q3", "par_q4", "par_q5"].forEach((key, index) => {
+                            dataArr.push({ school: d.name, value: d[key], key: "Q" + (index + 1) });
+                        });
+                        return dataArr;
+                    })
+                    .join("rect")
+                    // .transition().duration(500)
+                    .attr("x", d => qScale(d.key)+30)
+                    .attr("y", d => percentBScale(d.value))
+                    .attr("width", 35)
+                    .attr("height", d => ivyBChartHeight - percentBScale(d.value))
+                    .attr("fill", "steelblue");
 
 
 
