@@ -329,6 +329,10 @@
 
 
                 // ivy chart
+                let colorScale = d3.scaleOrdinal()
+                    .domain(["Brown", "Columbia", "Cornell", "Dartmouth", "Harvard", "Penn", "Princeton", "Yale", "Uchicago", "Duke", "Stanford", "MIT", "National Avg"])
+                    .range(["#4E3629", "#9BCBEB", "#B31B1B", "#046A38", "#A41034", "#A41034", "#FF671F", "#00356B", "maroon", "#003087", "#8C1515", "#750014", "gray"]);
+
 
                 function updateChart(selectedOption) {
                     let schools = parentBins.map(s=>s.name);
@@ -374,7 +378,7 @@
                                 .attr("y", p => percentScale(p[selectedOption]))
                                 .attr("width", 35)
                                 .attr("height", p => ivyChartHeight - percentScale(p[selectedOption]))
-                                .attr("fill", "steelblue");
+                                .attr("fill", s => colorScale(s.name));
                 }
 
                 updateChart("par_q1");
