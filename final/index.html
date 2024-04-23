@@ -330,8 +330,8 @@
 
                 // ivy chart
                 let colorScale = d3.scaleOrdinal()
-                    .domain(["Brown", "Columbia", "Cornell", "Dartmouth", "Harvard", "Penn", "Princeton", "Yale", "Uchicago", "Duke", "Stanford", "MIT", "National Avg"])
-                    .range(["#4E3629", "#9BCBEB", "#B31B1B", "#046A38", "#A41034", "#A41034", "#FF671F", "#00356B", "#800000", "#003087", "#8C1515", "#750014", "gray"]);
+                    .domain(parentBins.map(s=>s.name))
+                    .range(["#4E3629", "#9BCBEB", "#B31B1B", "#046A38", "#003087", "#A41034", "#750014", "#FF671F", "#8C1515", "#800000", "#011F5B", "#00356B", "gray"]);
 
                 let iconUrlMap = {
                     "Brown": "brown.png",
@@ -343,15 +343,15 @@
                     "MIT": "mit.png",
                     "Princeton": "princeton.png",
                     "Stanford": "stanford.png",
-                    "Penn": "penn.png",
                     "Uchicago": "uchicago.png",
+                    "Penn": "penn.png",
                     "Yale": "yale.png"
                 };
 
 
                 function updateChart(selectedOption) {
                     let schools = parentBins.map(s=>s.name);
-                    // console.log(schools);
+                    console.log(schools);
                     let schoolScale = d3.scaleBand().domain(schools).range([0, ivyChartWidth]).padding(0.1);
 
                     let extent = d3.extent(parentBins, p => p[selectedOption]);
@@ -419,9 +419,6 @@
                     });
 
                     bottomAxisGroup.call(ivyBottomAxis);
-
-
-
 
                     ivyChartArea.raise();
 
