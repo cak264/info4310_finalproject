@@ -331,7 +331,22 @@
                 // ivy chart
                 let colorScale = d3.scaleOrdinal()
                     .domain(["Brown", "Columbia", "Cornell", "Dartmouth", "Harvard", "Penn", "Princeton", "Yale", "Uchicago", "Duke", "Stanford", "MIT", "National Avg"])
-                    .range(["#4E3629", "#9BCBEB", "#B31B1B", "#046A38", "#A41034", "#A41034", "#FF671F", "#00356B", "maroon", "#003087", "#8C1515", "#750014", "gray"]);
+                    .range(["#4E3629", "#9BCBEB", "#B31B1B", "#046A38", "#A41034", "#A41034", "#FF671F", "#00356B", "#800000", "#003087", "#8C1515", "#750014", "gray"]);
+
+                let iconUrlMap = {
+                    "Brown": "brown.png",
+                    "Columbia": "columbia.svg",
+                    "Cornell": "cornell.png",
+                    "Dartmouth": "dartmouth.png",
+                    "Duke": "duke.png",
+                    "Harvard": "harvard.png",
+                    "MIT": "mit.png",
+                    "Princeton": "princeton.png",
+                    "Stanford": "stanford.png",
+                    "Penn": "penn.png",
+                    "Uchicago": "uchicago.png",
+                    "Yale": "yale.png"
+                };
 
 
                 function updateChart(selectedOption) {
@@ -358,16 +373,55 @@
                                 .call(ivyLeftAxisGridlines);
 
                     // text or icons?
-                    let ivyBottomAxis = d3.axisBottom(schoolScale);
-                    ivyChart.append("g")
+                    let ivyBottomAxis = d3.axisBottom(schoolScale)
+                                            .tickFormat(d => {
+                                                            if (d === "National Avg") {
+                                                                return d;
+                                                            } else {
+                                                                return "";
+                                                            }
+                                                        });
+
+                    let bottomAxisGroup = ivyChart.append("g")
                                 .attr("class", "bottom-axis")
-                                .attr("transform", `translate(${ivy_margins.left}, ${ivy_margins.top+ivyChartHeight+10})`)
-                                .call(ivyBottomAxis)
-                                .selectAll("text")
-                                    .style("text-anchor", "end")
-                                    .attr("dx", "-.8em")
-                                    .attr("dy", ".15em")
-                                    .attr("transform", "rotate(-55)" );
+                                .attr("transform", `translate(${ivy_margins.left}, ${ivy_margins.top+ivyChartHeight+10})`);
+
+                    Object.keys(iconUrlMap).forEach((school, index) => {
+                        if (school !== "National Avg") {
+                            let iconWidth = 20;
+                            let iconHeight = 20;
+                            let y_pos = 10;
+                            let x_pos = index * 64 + 26;
+
+                            if (school === "Yale") {
+                                iconWidth = 32;
+                                iconHeight = 32;
+                                y_pos = 3;
+                                x_pos = x_pos-5;
+
+                            }
+
+                            if (school === "Stanford") {
+                                iconWidth = 26;
+                                iconHeight = 26;
+                                y_pos = 6;
+                                x_pos = x_pos-3;
+                            }
+
+
+                            bottomAxisGroup.append("image")
+                                .attr("xlink:href", iconUrlMap[school])
+                                .attr("width", iconWidth)
+                                .attr("height", iconHeight)
+                                .attr("x", x_pos)
+                                .attr("y", y_pos);
+                        }
+                    });
+
+                    bottomAxisGroup.call(ivyBottomAxis);
+
+
+
 
                     ivyChartArea.raise();
 
