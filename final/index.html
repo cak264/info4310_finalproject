@@ -55,6 +55,10 @@
                 text-align: center;
             }
 
+            #vis4, #vis4_title {
+                display: none;
+            }
+
         </style>
     </header>
     <body>
@@ -71,6 +75,7 @@
             <g id="filters"></g>
         </div>
 
+        <h2>Title</h2>
         <div id="vis2">
             <svg width="600" height="400" id="line-chart-bonus"></svg>
         </div>
@@ -83,7 +88,7 @@
             </div>
         </div>
 
-        <h2>Parental Income Distribution At X</h2>
+        <h2 id="vis4_title">Parental Income Distribution At X</h2>
         <div id="vis4">
             <svg width="600" height="400" id="ivy-bonus"></svg>
             <div id ="ivy_bonus_filters">
@@ -405,29 +410,6 @@
                             .call(lineBBottomAxis);
 
 
-                // let clickedSchool = d.name;
-
-                // let filteredData = parentBins.filter(item => item.name === clickedSchool);
-
-                // ivyBChartArea.selectAll("rect")
-                //     .data(filteredData.flatMap(d =>
-                //         ["par_q1", "par_q2", "par_q3", "par_q4", "par_q5"].map((key, index) => ({
-                //             school: d.name,
-                //             value: d[key],
-                //             key: "Q" + (index + 1)
-                //         }))
-                //     ))
-                //     .join("rect")
-                //     .transition().duration(500)
-                //     .attr("x", d => qScale(d.key) + 30)
-                //     .attr("y", d => percentBScale(d.value))
-                //     .attr("width", 35)
-                //     .attr("height", d => ivyBChartHeight - percentBScale(d.value))
-                //     .attr("fill", d => colorScale(d.school));
-
-                // ivyBChartArea.raise();
-
-
                 // Ivy filters
                 let IvyFilters = d3.select("#ivy_filters");
                 let binInputs = IvyFilters.append("div").attr("id", "binInputs");
@@ -579,6 +561,14 @@
 
                 ivyChartArea.selectAll("rect")
                     .on("click", function(event, d) {
+
+                        d3.select("#vis4")
+                            .style("display", "flex");
+                        d3.select("#vis4_title")
+                            .style("display", "block");
+                        // d3.select("#ivy_bonus_filters")
+                        //     .style("float", "left");
+
 
                         // ivy bonus chart
                         let qScale = d3.scaleBand().domain(['Q1', 'Q2', 'Q3', 'Q4', 'Q5']).range([0, ivyBChartWidth]).padding(0.1);
