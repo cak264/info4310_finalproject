@@ -1,6 +1,5 @@
 <html>
     <header>
-        <h3 id="head_h3">Cameron Kull, cak264 & Marie Williams, mcw242</h3>
         <script src="https://d3js.org/d3.v7.min.js"></script>
 
         <style>
@@ -12,8 +11,9 @@
               stroke: none;
             }
 
-            #vis1 {
+            #vis1, #vis2, #vis3 {
                 display: flex;
+                justify-content: center;
             }
 
             #vis1 #filters {
@@ -30,27 +30,61 @@
             }
 
             #ivy_filters, #ivy_bonus_filters {
-                width: 300px;
+                width: 230px;
                 height: 400px;
                 margin-left: 30px;
+            }
+
+            h2 {
+                text-align: center;
+                margin-top: 80px;
+                margin-bottom: 50px;
+            }
+
+            h1, h3 {
+                text-align: center;
+                margin-bottom: 0px;
+            }
+
+            h1 {
+                padding-top: 30px;
+            }
+
+            #context {
+                width: 600px;
+                text-align: center;
             }
 
         </style>
     </header>
     <body>
 
+        <h1>How Economically Accessible Are US Universities?</h1>
+        <h3 id="head_h3">Cameron Kull, cak264 & Marie Williams, mcw242</h3>
+        <div id="context">
+            <p>To add: context for article</p>
+        </div>
+
+        <h2>Title</h2>
         <div id="vis1">
             <svg width="900" height="600" id="line-chart"></svg>
             <g id="filters"></g>
         </div>
-        <svg width="900" height="600" id="ivy-main"></svg>
-        <div id ="ivy_filters">
-            <h2>Filters</h2>
+
+        <h2>A Look At The Percentage of Students Belonging To The X Across Top US Universities</h2>
+        <div id="vis2">
+            <svg width="900" height="600" id="ivy-main"></svg>
+            <div id ="ivy_filters">
+                <h2>Filters</h2>
+            </div>
         </div>
 
-        <svg width="600" height="400" id="ivy-bonus"></svg>
-        <div id ="ivy_bonus_filters">
-            <h2>Filters</h2>
+        <h2>Parental Income Distribution At X</h2>
+        <div id="vis3">
+            <svg width="600" height="400" id="ivy-bonus"></svg>
+            <div id ="ivy_bonus_filters">
+                <h2>Filters</h2>
+            </div>
         </div>
 
 
