@@ -145,7 +145,7 @@
                 function updateBars(dol_type) {
 
                     // create bars
-                    lineChartArea.selectAll("rect").data(meanIncomes)
+                    lineChartArea.selectAll("rect.vis1Bar").data(meanIncomes)
                                 .join("rect")
                                 .transition().duration(500)
                                 .attr("class", "vis1Bar")
@@ -303,9 +303,12 @@
                 })
 
                 // line chart hover
-                let barLabel = lineChartArea.append("text")
-                                            .attr("x", 0)
-                                            .attr("y", 0);
+                let barLabel = lineChartArea.append("text");
+                let backgroundBox = lineChartArea.append("rect")
+                                                 .attr("width", 100)
+                                                 .attr("height", 25)
+                                                 .attr("fill", "white")
+                                                 .attr("visibility", "hidden");
     
                 lineChartArea.selectAll("rect").on("mouseover", function(event, d){
                     d3.select(this)
@@ -314,12 +317,20 @@
                     if (d.Year<1974){
                         barLabel.text(d.Year+": $"+d[currentDollarType+"_thirdQuintile"])
                             .attr("x", yearScale(1974)-110)
-                            .attr("y", 475);
+                            .attr("y", dollarScale(d[currentDollarType+"_thirdQuintile"]))
+                            .raise();
+                        backgroundBox.attr("x", yearScale(1974)-110)
+                                     .attr("y", dollarScale(d[currentDollarType+"_thirdQuintile"])-20)
+                                     .attr("visibility", "visible");
                     }
                     else{
                         barLabel.text(d.Year+": $"+d[currentDollarType+"_thirdQuintile"])
                             .attr("x", yearScale(d.Year)-100)
-                            .attr("y", dollarScale(d[currentDollarType+"_thirdQuintile"])-10);
+                            .attr("y", dollarScale(d[currentDollarType+"_thirdQuintile"]))
+                            .raise();
+                        backgroundBox.attr("x", yearScale(d.Year)-100)
+                                     .attr("y", dollarScale(d[currentDollarType+"_thirdQuintile"])-20)
+                                     .attr("visibility", "visible");
                     }
                     
                 });
@@ -327,10 +338,12 @@
                 lineChartArea.selectAll("rect").on("mouseout", function(){
                     d3.select(this)
                       .attr("stroke", "none");
+                    barLabel.text("");
+                    backgroundBox.attr("visibility", "hidden");
                 });
 
                 // Line Chart Bonus
-                // ivy bonus chart
+                
                 let line_qScale = d3.scaleBand().domain(['Q1', 'Q2', 'Q3', 'Q4', 'Q5']).range([0, lBchartWidth]).padding(0.1);
 
                 let dollarBScale = d3.scaleLinear().domain([0, highIncomeExtent[1]]).range([lBchartHeight, 0]);
