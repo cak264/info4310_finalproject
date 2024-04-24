@@ -69,13 +69,13 @@
             <p>To add: context for article</p>
         </div>
 
-        <h2>Title</h2>
+        <h2>Mean Income of Middle Class Americans and College Tuition Over Time</h2>
         <div id="vis1">
             <svg width="900" height="600" id="line-chart"></svg>
             <g id="filters"></g>
         </div>
 
-        <h2>Title</h2>
+        <h2 id="lineBonusTitle">Income by Quintile for YEAR</h2>
         <div id="vis2">
             <svg width="600" height="400" id="line-chart-bonus"></svg>
         </div>
@@ -408,6 +408,39 @@
                             .attr("class", "bottom-axis")
                             .attr("transform", `translate(${lc_Bmargins.left}, ${lc_Bmargins.top+lBchartHeight+10})`)
                             .call(lineBBottomAxis);
+
+                lineBChart.attr("visibility", "hidden");
+                d3.select("#lineBonusTitle").attr("visibility", "hidden"); // why doesn't this work?
+
+                lineChartArea.selectAll("rect").on("click", function(event, d){
+                    console.log(this);
+                    console.log(d);
+
+                    //name mappings
+                    var quintileMappings = {
+                        "current_firstQuintile": "Q1",
+                        "current_secondQuintile": "Q2",
+                        "current_thirdQuintile": "Q3",
+                        "current_fourthQuintile": "Q4",
+                        "current_fifthQuintile": "Q5",
+                        "adjusted_firstQuintile": "Q1",
+                        "adjusted_secondQuintile": "Q2",
+                        "adjusted_thirdQuintile": "Q3",
+                        "adjusted_fourthQuintile": "Q4",
+                        "adjusted_fifthQuintile": "Q5"
+                    };
+
+                    // lineBChartArea.selectAll("rect").data(d)
+                    //               .join("rect")
+                    //               .transition().duration(500)
+                    //               .attr("class", "vis1BonusBar")
+                    //               .attr("x", m=> line_qScale(quintileMappings[m.])-4)
+                    //             .attr("y", m=> dollarScale(m[dol_type+"_thirdQuintile"]))
+                    //             .attr("width", 10)
+                    //             .attr("height", m=> lchartHeight-dollarScale(m[dol_type+"_thirdQuintile"]))
+                    //             .attr("fill", "steelblue");
+
+                })
 
 
                 // Ivy filters
