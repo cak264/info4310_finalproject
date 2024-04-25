@@ -84,7 +84,7 @@
             <svg width="600" height="400" id="line-chart-bonus"></svg>
         </div>
 
-        <h2 class="title">A Look At The Percentage of Students Belonging To The X Across Top US Universities</h2>
+        <h2 id="vis3_title" class="title"></h2>
         <div id="vis3">
             <svg width="900" height="600" id="ivy-main"></svg>
             <div id ="ivy_filters">
@@ -95,7 +95,7 @@
             </div>
         </div>
 
-        <h2 id="vis4_title" class="title">Parental Income Distribution At X</h2>
+        <h2 id="vis4_title" class="title"></h2>
         <div id="vis4">
             <svg width="600" height="400" id="ivy-bonus"></svg>
             <!-- <div id ="ivy_bonus_filters">
@@ -545,6 +545,8 @@
 
 
                 function updateChart(selectedOption) {
+                    d3.select("#vis3_title").text("A Look At The Percentage of Students Belonging To The "+" Across Top US Universities");
+
                     let schools = parentBins.map(s=>s.name);
                     console.log(schools);
                     let schoolScale = d3.scaleBand().domain(schools).range([0, ivyChartWidth]).padding(0.1);
@@ -676,6 +678,8 @@
 
                         const ivyBChartContainer = document.getElementById("vis4");
                         ivyBChartContainer.scrollIntoView({ behavior: "smooth" });
+
+                        d3.select("#vis4_title").text("Parental Income Distribution At " + d.name);
 
 
                         // ivy bonus chart
