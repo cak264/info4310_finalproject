@@ -59,6 +59,10 @@
                 display: none;
             }
 
+            .ivy_rect:hover {
+                cursor: pointer;
+            }
+
         </style>
     </header>
     <body>
@@ -440,7 +444,7 @@
                     quintiles.forEach(q =>{
                         if (hasBeenClicked){
                             lineBChartArea.select("rect."+q)
-                                          .transition().duration(500)              
+                                          .transition().duration(500)
                                           .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+35)
                                           .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
                                           .attr("height", m=> lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]));
@@ -474,7 +478,7 @@
                           .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
                           .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year));
                     }
-                    
+
 
                     hasBeenClicked = true;
                     tuitionLine = true;
@@ -543,7 +547,7 @@
                     let schoolScale = d3.scaleBand().domain(schools).range([0, ivyChartWidth]).padding(0.1);
 
                     let extent = d3.extent(parentBins, p => p[selectedOption]);
-                    let percentScale = d3.scaleLinear().domain([0, extent[1]]).range([ivyChartHeight, 0]);
+                    let percentScale = d3.scaleLinear().domain([0, extent[1]+0.01]).range([ivyChartHeight, 0]);
 
                     ivyChart.selectAll(".left-axis, .gridlines, .bottom-axis").remove();
 
@@ -560,7 +564,7 @@
                                 .attr("class", "gridlines")
                                 .call(ivyLeftAxisGridlines);
 
-                    // text or icons?
+
                     let ivyBottomAxis = d3.axisBottom(schoolScale)
                                             .tickFormat(d => {
                                                             if (d === "National Avg") {
@@ -613,11 +617,36 @@
                     ivyChartArea.selectAll("rect").data(parentBins)
                                 .join("rect")
                                 .transition().duration(500)
+                                .attr("class", "ivy_rect")
                                 .attr("x", s => schoolScale(s.name) + 10)
                                 .attr("y", p => percentScale(p[selectedOption]))
                                 .attr("width", 35)
                                 .attr("height", p => ivyChartHeight - percentScale(p[selectedOption]))
                                 .attr("fill", s => colorScale(s.name));
+
+                    //
+                    let Label = ivyChartArea.append("text");
+
+                    ivyChartArea.selectAll("rect").on("mouseover", function(event, d){
+                        d3.select(this)
+                          .attr("stroke", "black")
+                          .attr("stroke-width", 2);
+
+                          Label.text((d[selectedOption] * 100).toFixed(2) + "%")
+                              .attr("x", schoolScale(d.name) + 8)
+                              .attr("y", percentScale(d[selectedOption])-5)
+                              .raise();
+                    });
+
+                    ivyChartArea.selectAll("rect").on("mouseout", function(event, d){
+                        d3.select(this)
+                          .attr("stroke", "white")
+                          .attr("stroke-width", 0);
+
+                          Label.text("");
+                    });
+
+
                 }
 
                 updateChart("par_q1");
@@ -647,9 +676,9 @@
                         let qScale = d3.scaleBand().domain(['Q1', 'Q2', 'Q3', 'Q4', 'Q5']).range([0, ivyBChartWidth]).padding(0.1);
                         let maxPct = d3.max(parentBins, d => d3.max([d.par_q1, d.par_q2, d.par_q3, d.par_q4, d.par_q5]));
 
-                        let percentBScale = d3.scaleLinear().domain([0, maxPct]).range([ivyBChartHeight, 0]);
+                        let percentBScale = d3.scaleLinear().domain([0, maxPct+0.05]).range([ivyBChartHeight, 0]);
 
-                        // ivyChart.selectAll(".left-axis, .gridlines, .bottom-axis").remove();
+                        ivyBChart.selectAll(".left-axis, .gridlines, .bottom-axis").remove();
 
                         let ivyBLeftAxis = d3.axisLeft(percentBScale);
                         ivyBChart.append("g")
@@ -692,6 +721,27 @@
                             .attr("fill", d => colorScale(d.school));
 
                         ivyBChartArea.raise();
+
+                        let BLabel = ivyBChartArea.append("text");
+
+                        ivyBChartArea.selectAll("rect").on("mouseover", function(event, d){
+                            d3.select(this)
+                              .attr("stroke", "black")
+                              .attr("stroke-width", 2);
+
+                              BLabel.text((d.value).toFixed(2)+"%")
+                                  .attr("x", qScale(d.key)+28)
+                                  .attr("y", percentBScale(d.value)-5)
+                                  .raise();
+                        });
+
+                        ivyBChartArea.selectAll("rect").on("mouseout", function(event, d){
+                            d3.select(this)
+                              .attr("stroke", "white")
+                              .attr("stroke-width", 0);
+
+                              BLabel.text("");
+                        });
                     });
 
 
