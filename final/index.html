@@ -386,7 +386,7 @@
 
                 // Line Chart Bonus
 
-                let line_qScale = d3.scaleBand().domain(['Q1', 'Q2', 'Q3', 'Q4', 'Q5']).range([0, lBchartWidth]).padding(0.1);
+                let line_qScale = d3.scaleBand().domain(['Q1', 'Q2', 'Q3', 'Q4', 'Q5']).range([0, lBchartWidth]).padding(0.01);
 
                 let dollarBScale = d3.scaleLinear().domain([0, highIncomeExtent[1]]).range([lBchartHeight, 0]);
 
@@ -412,9 +412,14 @@
                 lineBChart.attr("visibility", "hidden");
                 d3.select("#lineBonusTitle").attr("visibility", "hidden"); // why doesn't this work?
 
+                let hasBeenClicked = false;
+                let tuitionLine = false;
+                lineBChartArea.raise();
+
                 lineChartArea.selectAll("rect").on("click", function(event, d){
-                    console.log(this);
-                    console.log(d);
+
+                    lineBChart.attr("visibility", "visible");
+                    lineBChartArea
 
                     //name mappings
                     var quintileMappings = {
@@ -430,15 +435,50 @@
                         "adjusted_fifthQuintile": "Q5"
                     };
 
-                    // lineBChartArea.selectAll("rect").data(d)
-                    //               .join("rect")
-                    //               .transition().duration(500)
-                    //               .attr("class", "vis1BonusBar")
-                    //               .attr("x", m=> line_qScale(quintileMappings[m.])-4)
-                    //             .attr("y", m=> dollarScale(m[dol_type+"_thirdQuintile"]))
-                    //             .attr("width", 10)
-                    //             .attr("height", m=> lchartHeight-dollarScale(m[dol_type+"_thirdQuintile"]))
-                    //             .attr("fill", "steelblue");
+                    let quintiles = ["firstQuintile", "secondQuintile", "thirdQuintile", "fourthQuintile", "fifthQuintile"];
+
+                    quintiles.forEach(q =>{
+                        if (hasBeenClicked){
+                            lineBChartArea.select("rect."+q)
+                                          .transition().duration(500)              
+                                          .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+35)
+                                          .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
+                                          .attr("height", m=> lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]));
+                        }
+                        else{
+                            lineBChartArea.append("rect")
+                                  .attr("class", q)
+                                  .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+35)
+                                  .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
+                                  .attr("width", 35)
+                                  .attr("height", m=> lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]))
+                                  .attr("fill", "steelblue");
+                        }
+
+                    })
+
+                    // add tuition line
+                    selectedYearTuition = tuition.filter(t=> t.year == d.Year & t.institution_type == "all" & t.dollar_type == currentDollarType);
+
+                    if (!tuitionLine){
+                        lineBChartArea.append("line")
+                                  .attr("x1", 0)
+                                  .attr("x2", lBchartWidth)
+                                  .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                                  .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                                  .attr("stroke", "red")
+                                  .attr("id", "tuitionLine");
+                    }
+                    else{
+                        d3.select("#tuitionLine")
+                          .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                          .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year));
+                    }
+                    
+
+                    hasBeenClicked = true;
+                    tuitionLine = true;
+
 
                 })
 
