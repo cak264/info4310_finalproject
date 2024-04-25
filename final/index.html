@@ -545,7 +545,7 @@
 
 
                 function updateChart(selectedOption) {
-                    d3.select("#vis3_title").text("A Look At The Percentage of Students Belonging To The "+" Across Top US Universities");
+                    d3.select("#vis3_title").text("A Look At The Percentage of Students Belonging To The "+ income_bins[selectedOption] + " Across Top US Universities");
 
                     let schools = parentBins.map(s=>s.name);
                     console.log(schools);
