@@ -79,7 +79,6 @@
             <g id="filters"></g>
         </div>
 
-        <h2 id="lineBonusTitle" class="title">Income by Quintile for YEAR</h2>
         <div id="vis2">
             <svg width="600" height="400" id="line-chart-bonus"></svg>
         </div>
@@ -422,11 +421,17 @@
                 let hasBeenClicked = false;
                 let tuitionLine = false;
                 lineBChartArea.raise();
+                let lineBonusTitle = lineBChartArea.append("text")
+                                                   .attr("x", 120)
+                                                   .attr("y", 10)
+                                                   .style("font-size", 23)
+                                                   .style("font-weight", "bold");
+                let percentLabel = lineBChartArea.append("text");
 
                 lineChartArea.selectAll("rect").on("click", function(event, d){
 
                     lineBChart.attr("visibility", "visible");
-                    lineBChartArea
+                    lineBonusTitle.text("Income by Quintile for "+ d["Year"].toString());
 
                     //name mappings
                     var quintileMappings = {
@@ -450,7 +455,7 @@
                                           .transition().duration(500)
                                           .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+35)
                                           .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
-                                          .attr("height", m=> lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]));
+                                          .attr("height", lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]));
                         }
                         else{
                             lineBChartArea.append("rect")
@@ -487,7 +492,37 @@
                     tuitionLine = true;
 
 
+                    // adding hovering to bonus chart
+
+                    lineBChartArea.selectAll("rect").on("mouseover", function(event){
+
+                        let rectClass = d3.select(this).attr("class");
+                        console.log(d);
+                        d3.select(this).attr("stroke", "black")
+                                       .attr("stroke-width", 2);
+                        let barIncome = d[currentDollarType+"_"+rectClass];
+                        let lineTuition = selectedYearTuition[0].four_and_two_year;
+                        let f = d3.format(".2%")
+                        let percentageOfIncome = f(lineTuition/barIncome);
+                        percentLabel.text(percentageOfIncome.toString())
+                                    .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+rectClass])+33)
+                                    .attr("y", dollarBScale(d[currentDollarType+"_"+rectClass])-5)
+                                    .style("font-weight", "bold");
+                        
+                        
+                        
+                    })
+
+                    lineBChartArea.selectAll("rect").on("mouseout", function(event){
+
+                        let rectClass = d3.select(this).attr("class");
+                        d3.select(this).attr("stroke", "none");
+                        percentLabel.text("");
+
+                        })
                 })
+
+                
 
 
                 // Ivy filters
