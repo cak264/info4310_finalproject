@@ -433,6 +433,9 @@
                     lineBChart.attr("visibility", "visible");
                     lineBonusTitle.text("Income by Quintile for "+ d["Year"].toString());
 
+                    const lineBChartContainer = document.getElementById("vis2");
+                        lineBChartContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
                     //name mappings
                     var quintileMappings = {
                         "current_firstQuintile": "Q1",
@@ -712,7 +715,7 @@
                         //     .style("float", "left");
 
                         const ivyBChartContainer = document.getElementById("vis4");
-                        ivyBChartContainer.scrollIntoView({ behavior: "smooth" });
+                        ivyBChartContainer.scrollIntoView({ behavior: "smooth", block: "end" });
 
                         d3.select("#vis4_title").text("Parental Income Distribution At " + d.name);
 
