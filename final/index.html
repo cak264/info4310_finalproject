@@ -254,6 +254,7 @@
 
                 let currentDollarType = "current";
                 let currentDegreeLength = "four_and_two_year";
+                let currentSelectedYear = "";
                 updateBars(currentDollarType);
                 createLine("all", currentDollarType, currentDegreeLength);
 
@@ -293,6 +294,7 @@
                     deleteAllLines();
                     updateBars(currentDollarType);
                     addSelectedLines();
+                    updateDash(currentSelectedYear);
                 })
 
                 d3.select("#adjustedButton").on("click", function(){
@@ -300,6 +302,7 @@
                     deleteAllLines();
                     updateBars(currentDollarType);
                     addSelectedLines();
+                    updateDash(currentSelectedYear);
                 })
 
                 // checkbox interactivity
@@ -443,12 +446,18 @@
                 let percentLabel = lineBChartArea.append("text");
 
                 lineChartArea.selectAll("rect").on("click", function(event, d){
+                    console.log(d);
+                    updateDash(d);
+                    currentSelectedYear = d;
+                
+                })
 
-                    lineBChart.attr("visibility", "visible");
+                function updateDash(d){
                     lineBonusTitle.text("Income by Quintile for "+ d["Year"].toString());
 
-                    const lineBChartContainer = document.getElementById("vis2");
-                        lineBChartContainer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+                    dollarBScale.domain([0, d[currentDollarType+"_fifthQuintile"]+5000]);
+                    // lineBChart.call(lineBLeftAxis);
+
 
                     //name mappings
                     var quintileMappings = {
@@ -469,19 +478,19 @@
                     quintiles.forEach(q =>{
                         if (hasBeenClicked){
                             lineBChartArea.select("rect."+q)
-                                          .transition().duration(500)
-                                          .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+15)
-                                          .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
-                                          .attr("height", lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]));
+                                        .transition().duration(500)
+                                        .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+15)
+                                        .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
+                                        .attr("height", lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]));
                         }
                         else{
                             lineBChartArea.append("rect")
-                                  .attr("class", q)
-                                  .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+15)
-                                  .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
-                                  .attr("width", 35)
-                                  .attr("height", m=> lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]))
-                                  .attr("fill", "steelblue");
+                                .attr("class", q)
+                                .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+15)
+                                .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
+                                .attr("width", 35)
+                                .attr("height", m=> lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]))
+                                .attr("fill", "steelblue");
                         }
 
                     })
@@ -491,17 +500,17 @@
 
                     if (!tuitionLine){
                         lineBChartArea.append("line")
-                                  .attr("x1", 0)
-                                  .attr("x2", lBchartWidth)
-                                  .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                                  .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                                  .attr("stroke", "red")
-                                  .attr("id", "tuitionLine");
+                                .attr("x1", 0)
+                                .attr("x2", lBchartWidth)
+                                .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                                .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                                .attr("stroke", "red")
+                                .attr("id", "tuitionLine");
                     }
                     else{
                         d3.select("#tuitionLine")
-                          .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                          .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year));
+                        .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                        .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year));
                     }
 
 
@@ -516,7 +525,7 @@
                         let rectClass = d3.select(this).attr("class");
                         console.log(d);
                         d3.select(this).attr("stroke", "black")
-                                       .attr("stroke-width", 2);
+                                    .attr("stroke-width", 2);
                         let barIncome = d[currentDollarType+"_"+rectClass];
                         let lineTuition = selectedYearTuition[0].four_and_two_year;
                         let f = d3.format(".2%")
@@ -537,7 +546,7 @@
                         percentLabel.text("");
 
                         })
-                })
+                }
 
                 
 
