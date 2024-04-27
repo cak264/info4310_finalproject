@@ -63,6 +63,18 @@
                 cursor: pointer;
             }
 
+            .buttonContainer {
+                display: flex;
+                flex-direction: column;
+            }
+
+            #vis1Container {
+                width: 1450px;
+                position: relative;
+                left: 200px;
+                padding: -50px;
+            }
+
         </style>
     </header>
     <body>
@@ -73,14 +85,18 @@
             <p>To add: context for article</p>
         </div>
 
-        <h2 class="title">Mean Income of Middle Class Americans and College Tuition Over Time</h2>
-        <div id="vis1">
-            <svg width="900" height="600" id="line-chart"></svg>
-            <g id="filters"></g>
+        <div id="vis1Container" style="border: 1px solid black">
+            <h2 class="title">Mean Income of Middle Class Americans and College Tuition Over Time</h2>
+            <div id="vis1">
+                <g id="filters"></g>
+                <svg width="800" height="600" id="line-chart"></svg>
+                <svg width="400" height="350" id="line-chart-bonus"></svg>
+                
+            </div>
         </div>
 
         <div id="vis2">
-            <svg width="600" height="400" id="line-chart-bonus"></svg>
+            
         </div>
 
         <h2 id="vis3_title" class="title"></h2>
@@ -159,7 +175,7 @@
                 // income and year extents and scales
                 let yearExtent = d3.extent(meanIncomes, m=>m.Year);
 
-                let yearScale = d3.scaleLinear().domain(yearExtent).range([0, lchartWidth]);
+                let yearScale = d3.scaleLinear().domain([yearExtent[0]-0.5, yearExtent[1]+0.5]).range([0, lchartWidth]);
                 let lowIncomeExtent = d3.extent(meanIncomes, m=>m.current_firstQuintile);
                 let highIncomeExtent = d3.extent(meanIncomes, m=>m.current_fifthQuintile);
                 let middleIncomeExtent = d3.extent(meanIncomes, m=>m.current_thirdQuintile);
@@ -247,8 +263,9 @@
                 filterPanel.append("h2").text("University Details");
 
                 filterPanel.append("h3").text("Dollar Value");
-                filterPanel.append("button").text("Current Dollars").attr("id", "currentButton");
-                filterPanel.append("button").text("2021 Adjusted Dollars").attr("id", "adjustedButton");
+                let buttonContainer = filterPanel.append("g").attr("class", "buttonContainer");
+                buttonContainer.append("button").text("Current Dollars").attr("id", "currentButton");
+                buttonContainer.append("button").text("2021 Adjusted Dollars").attr("id", "adjustedButton");
 
                 filterPanel.append("h3").text("Institution Type");
                 let institutionInputs = filterPanel.append("div").attr("id", "institutionInputs");
@@ -415,16 +432,13 @@
                             .attr("transform", `translate(${lc_Bmargins.left}, ${lc_Bmargins.top+lBchartHeight+10})`)
                             .call(lineBBottomAxis);
 
-                lineBChart.attr("visibility", "hidden");
-                d3.select("#lineBonusTitle").attr("visibility", "hidden"); // why doesn't this work?
-
                 let hasBeenClicked = false;
                 let tuitionLine = false;
                 lineBChartArea.raise();
                 let lineBonusTitle = lineBChartArea.append("text")
-                                                   .attr("x", 120)
+                                                   .attr("x", 55)
                                                    .attr("y", 10)
-                                                   .style("font-size", 23)
+                                                   .style("font-size", 20)
                                                    .style("font-weight", "bold");
                 let percentLabel = lineBChartArea.append("text");
 
@@ -456,14 +470,14 @@
                         if (hasBeenClicked){
                             lineBChartArea.select("rect."+q)
                                           .transition().duration(500)
-                                          .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+35)
+                                          .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+15)
                                           .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
                                           .attr("height", lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]));
                         }
                         else{
                             lineBChartArea.append("rect")
                                   .attr("class", q)
-                                  .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+35)
+                                  .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+15)
                                   .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
                                   .attr("width", 35)
                                   .attr("height", m=> lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]))
@@ -508,7 +522,7 @@
                         let f = d3.format(".2%")
                         let percentageOfIncome = f(lineTuition/barIncome);
                         percentLabel.text(percentageOfIncome.toString())
-                                    .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+rectClass])+33)
+                                    .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+rectClass])+13)
                                     .attr("y", dollarBScale(d[currentDollarType+"_"+rectClass])-5)
                                     .style("font-weight", "bold");
                         
