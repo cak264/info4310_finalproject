@@ -69,11 +69,18 @@
             }
 
             #vis1Container {
-                width: 1450px;
+                width: 1550px;
                 position: relative;
                 left: 200px;
                 padding: -50px;
             }
+
+            #bonus-charts {
+                position: relative;
+                left: 10px;
+                width: 420px;
+            }
+
 
         </style>
     </header>
@@ -90,8 +97,10 @@
             <div id="vis1">
                 <g id="filters"></g>
                 <svg width="800" height="600" id="line-chart"></svg>
-                <svg width="400" height="350" id="line-chart-bonus"></svg>
-                
+                <div id="bonus-charts">
+                    <svg width="400" height="350" id="line-chart-bonus"></svg>
+                    <svg width="400" height="250" id="ratio-chart"></svg>
+                </div>
             </div>
         </div>
 
@@ -138,6 +147,15 @@
             const lineBChartArea = lineBChart.append("g")
                                            .attr("transform", `translate(${lc_Bmargins.left}, ${lc_Bmargins.top})`);
 
+            let ratioChart = d3.select("#ratio-chart");
+            const ratio_width = ratioChart.attr("width");
+            const ratio_height= ratioChart.attr("height");
+            const ratio_margins={top: 10, right: 10, bottom: 50, left: 60};
+            const ratiochartWidth = ratio_width - ratio_margins.left - ratio_margins.right;
+            const ratiochartHeight = ratio_height - ratio_margins.top - ratio_margins.bottom;
+            const ratioChartArea = ratioChart.append("g")
+                                           .attr("transform", `translate(${ratio_margins.left}, ${ratio_margins.top})`);
+
             let ivyChart = d3.select("#ivy-main");
             const ivy_width = ivyChart.attr("width");
             const ivy_height= ivyChart.attr("height");
@@ -180,7 +198,7 @@
                 let highIncomeExtent = d3.extent(meanIncomes, m=>m.current_fifthQuintile);
                 let middleIncomeExtent = d3.extent(meanIncomes, m=>m.current_thirdQuintile);
                 // let dollarScale = d3.scaleLinear().domain([lowIncomeExtent[0], highIncomeExtent[1]]).range([lchartHeight, 0]);
-                let dollarScale = d3.scaleLinear().domain([lowIncomeExtent[0], middleIncomeExtent[1]+5000]).range([lchartHeight, 0]);
+                let dollarScale = d3.scaleLinear().domain([0, middleIncomeExtent[1]+5000]).range([lchartHeight, 0]);
 
                 // axes
                 let lineLeftAxis = d3.axisLeft(dollarScale);
@@ -295,6 +313,7 @@
                     updateBars(currentDollarType);
                     addSelectedLines();
                     updateDash(currentSelectedYear);
+                    updateRatio();
                 })
 
                 d3.select("#adjustedButton").on("click", function(){
@@ -303,6 +322,7 @@
                     updateBars(currentDollarType);
                     addSelectedLines();
                     updateDash(currentSelectedYear);
+                    updateRatio();
                 })
 
                 // checkbox interactivity
@@ -350,6 +370,7 @@
                             d3.select("#check2Two").property("checked", false);
                             deleteAllLines(type, currentDollarType);
                             addSelectedLines();
+                            updateRatio();
                         }
                         else if (type == "four"){
                             let length = type+"_year"
@@ -358,6 +379,7 @@
                             d3.select("#check2Two").property("checked", false);
                             deleteAllLines();
                             addSelectedLines();
+                            updateRatio();
                         }
                         else{
                             let length = type+"_year"
@@ -366,6 +388,7 @@
                             d3.select("#check2Four").property("checked", false);
                             deleteAllLines();
                             addSelectedLines();
+                            updateRatio();
                         }
                     }
                 })
@@ -453,11 +476,8 @@
                 })
 
                 function updateDash(d){
+                    console.log(d);
                     lineBonusTitle.text("Income by Quintile for "+ d["Year"].toString());
-
-                    dollarBScale.domain([0, d[currentDollarType+"_fifthQuintile"]+5000]);
-                    // lineBChart.call(lineBLeftAxis);
-
 
                     //name mappings
                     var quintileMappings = {
@@ -547,6 +567,75 @@
 
                         })
                 }
+
+                // ratio chart
+
+                let ratioScale = d3.scaleLinear().domain([0.10, 0.5]).range([ratiochartHeight, 0]);
+                let ratioYearScale = d3.scaleLinear().domain([yearExtent[0]-0.5, yearExtent[1]+0.5]).range([0, ratiochartWidth]);
+
+                let ratioLeftAxis = d3.axisLeft(ratioScale);
+                ratioChart.append("g")
+                          .attr("class", "left-axis")
+                          .attr("transform", `translate(${ratio_margins.left-10}, ${ratio_margins.top})`)
+                          .call(ratioLeftAxis);
+
+                let ratioLeftAxisGridlines = d3.axisLeft(ratioScale)
+                                               .tickFormat("")
+                                               .tickSize(-ratiochartWidth-10);
+                ratioChart.append("g")
+                          .attr("class", "gridlines")
+                          .attr("transform", `translate(${ratio_margins.left-10}, ${ratio_margins.top})`)
+                          .call(ratioLeftAxisGridlines);
+
+                let ratioBottomAxis = d3.axisBottom(ratioYearScale)
+                                        .tickFormat(d3.format(".0f"));
+                ratioChart.append("g")
+                          .attr("class", "bottom-axis")
+                          .attr("transform", `translate(${ratio_margins.left}, ${ratio_margins.top+ratiochartHeight+10})`)
+                          .call(ratioBottomAxis);
+
+                // collect ratios
+
+                function updateRatio(){
+                    deleteRatioLine();
+                    let ratios = [];
+                    let index = 0;
+                    for (i=1968; i<2022; i++){
+                        let selectedTuition = d3.filter(tuition, t=> t.year == i & t.institution_type == "all" & t.dollar_type == currentDollarType);
+                        let selectedIncome = d3.filter(meanIncomes, m => m.Year == i);
+                        let ratio = selectedTuition[0][currentDegreeLength]/selectedIncome[0][currentDollarType+"_thirdQuintile"];
+
+                        ratios[index] = {year:i, ratio: ratio};
+                        index++;
+                    }
+
+                    console.log(ratios);
+
+                    let ratioLine = d3.line()
+                                .x(d => ratioYearScale(d.year))
+                                .y(d => ratioScale(d.ratio));
+
+                    ratioChartArea.append("path").datum(ratios)
+                                .attr("class", "ratioLine")
+                                .attr("fill", "none")
+                                .attr("stroke", "red")
+                                .attr("stroke-width", 3)
+                                .attr("d", ratioLine);
+                    ratioChartArea.raise();
+                }
+
+                function deleteRatioLine() {
+                    var line = d3.select(".ratioLine")
+                    if (line) {
+                        line.remove();
+                    } else {
+                        console.log("Path element not found.");
+                    }
+                };
+
+                updateRatio();
+
+                
 
                 
 
