@@ -11,10 +11,22 @@
               stroke: none;
             }
 
-            #vis1, #vis2, #vis3, #vis4 {
+            #vis1, #vis2, #vis3 {
                 display: flex;
                 justify-content: center;
             }
+
+            #vis4_title {
+                margin-top: 0px;
+                width: auto;
+            }
+
+            #vis4 {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
 
             #vis1 #filters {
                 margin-left: 30px;
@@ -30,7 +42,7 @@
             }
 
             #ivy_filters, #ivy_bonus_filters {
-                width: 230px;
+                width: 200px;
                 height: 400px;
                 margin-left: 30px;
             }
@@ -55,9 +67,6 @@
                 text-align: center;
             }
 
-            #vis4, #vis4_title {
-                display: none;
-            }
 
             .ivy_rect:hover {
                 cursor: pointer;
@@ -107,26 +116,23 @@
         </div>
 
         <div id="vis2">
-            
+
         </div>
 
         <h2 id="vis3_title" class="title"></h2>
         <div id="vis3">
-            <svg width="900" height="600" id="ivy-main"></svg>
             <div id ="ivy_filters">
                 <h3>Instructions</h3>
                 <p>Hover over a bar to see that school's exact percentage of parents belonging to the income group selected,
                      and click to see a breakdown of the parent income distribution for the selected school.</p>
                 <h3>Filters</h3>
             </div>
-        </div>
+            <svg width="800" height="600" id="ivy-main"></svg>
 
-        <h2 id="vis4_title" class="title"></h2>
-        <div id="vis4">
-            <svg width="600" height="400" id="ivy-bonus"></svg>
-            <!-- <div id ="ivy_bonus_filters">
-                <h2>Filters</h2>
-            </div> -->
+            <div id="vis4">
+                <h3 id="vis4_title" class="title"></h2>
+                <svg width="400" height="300" id="ivy-bonus"></svg>
+            </div>
         </div>
 
 
@@ -474,7 +480,7 @@
                     console.log(d);
                     updateDash(d);
                     currentSelectedYear = d;
-                
+
                 })
 
                 function updateDash(d){
@@ -556,9 +562,9 @@
                                     .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+rectClass])+13)
                                     .attr("y", dollarBScale(d[currentDollarType+"_"+rectClass])-5)
                                     .style("font-weight", "bold");
-                        
-                        
-                        
+
+
+
                     })
 
                     lineBChartArea.selectAll("rect").on("mouseout", function(event){
@@ -637,9 +643,9 @@
 
                 updateRatio();
 
-                
 
-                
+
+
 
 
                 // Ivy filters
@@ -676,9 +682,10 @@
 
 
                 // ivy chart
+                // stan original: #8C1515, chicago original: #800000
                 let colorScale = d3.scaleOrdinal()
                     .domain(parentBins.map(s=>s.name))
-                    .range(["#4E3629", "#9BCBEB", "#B31B1B", "#046A38", "#003087", "#A41034", "#750014", "#FF671F", "#8C1515", "#800000", "#011F5B", "#00356B", "gray"]);
+                    .range(["#4E3629", "#9BCBEB", "#B31B1B", "#046A38", "#003087", "#A41034", "#750014", "#FF671F", "#da0d1c", "#670E10", "#011F5B", "#00356B", "gray"]);
 
                 let iconUrlMap = {
                     "Brown": "brown.png",
@@ -740,7 +747,7 @@
                             let iconWidth = 20;
                             let iconHeight = 20;
                             let y_pos = 10;
-                            let x_pos = index * 64 + 26;
+                            let x_pos = index * 56.5 + 22;
 
                             if (school === "Yale") {
                                 iconWidth = 32;
@@ -818,99 +825,93 @@
                 });
 
 
-                ivyChartArea.selectAll("rect")
-                    .on("click", function(event, d) {
+                function updateBonusChart(schoolName) {
+                    const filteredData = parentBins.filter(d => d.name === schoolName);
 
-                        d3.select("#vis4")
-                            .style("display", "flex");
-                        d3.select("#vis4_title")
-                            .style("display", "block");
-                        // d3.select("#ivy_bonus_filters")
-                        //     .style("float", "left");
+                    d3.select("#vis4_title").text("Parental Income Distribution At " + schoolName);
 
-                        const ivyBChartContainer = document.getElementById("vis4");
-                        ivyBChartContainer.scrollIntoView({ behavior: "smooth", block: "end" });
+                    let qScale = d3.scaleBand().domain(['Q1', 'Q2', 'Q3', 'Q4', 'Q5']).range([0, ivyBChartWidth]).padding(0.1);
+                    let maxPct = d3.max(parentBins, d => d3.max([d.par_q1, d.par_q2, d.par_q3, d.par_q4, d.par_q5]));
 
-                        d3.select("#vis4_title").text("Parental Income Distribution At " + d.name);
+                    let percentBScale = d3.scaleLinear().domain([0, maxPct+0.05]).range([ivyBChartHeight, 0]);
 
+                    ivyBChart.selectAll(".left-axis, .gridlines, .bottom-axis").remove();
 
-                        // ivy bonus chart
-                        let qScale = d3.scaleBand().domain(['Q1', 'Q2', 'Q3', 'Q4', 'Q5']).range([0, ivyBChartWidth]).padding(0.1);
-                        let maxPct = d3.max(parentBins, d => d3.max([d.par_q1, d.par_q2, d.par_q3, d.par_q4, d.par_q5]));
+                    let ivyBLeftAxis = d3.axisLeft(percentBScale);
+                    ivyBChart.append("g")
+                                .attr("class", "left-axis")
+                                .attr("transform", `translate(${ivy_Bmargins.left-10}, ${ivy_Bmargins.top})`)
+                                .call(ivyBLeftAxis);
+                    let ivyBLeftAxisGridlines = d3.axisLeft(percentBScale)
+                                                .tickSize(-ivyBChartWidth-10)
+                                                .tickFormat('');
+                    ivyBChart.append("g")
+                                .attr("transform", `translate(${ivy_Bmargins.left-10}, ${ivy_Bmargins.top})`)
+                                .attr("class", "gridlines")
+                                .call(ivyBLeftAxisGridlines);
 
-                        let percentBScale = d3.scaleLinear().domain([0, maxPct+0.05]).range([ivyBChartHeight, 0]);
-
-                        ivyBChart.selectAll(".left-axis, .gridlines, .bottom-axis").remove();
-
-                        let ivyBLeftAxis = d3.axisLeft(percentBScale);
-                        ivyBChart.append("g")
-                                    .attr("class", "left-axis")
-                                    .attr("transform", `translate(${ivy_Bmargins.left-10}, ${ivy_Bmargins.top})`)
-                                    .call(ivyBLeftAxis);
-                        let ivyBLeftAxisGridlines = d3.axisLeft(percentBScale)
-                                                    .tickSize(-ivyBChartWidth-10)
-                                                    .tickFormat('');
-                        ivyBChart.append("g")
-                                    .attr("transform", `translate(${ivy_Bmargins.left-10}, ${ivy_Bmargins.top})`)
-                                    .attr("class", "gridlines")
-                                    .call(ivyBLeftAxisGridlines);
-
-                        let ivyBBottomAxis = d3.axisBottom(qScale);
-                        ivyBChart.append("g")
-                                    .attr("class", "bottom-axis")
-                                    .attr("transform", `translate(${ivy_Bmargins.left}, ${ivy_Bmargins.top+ivyBChartHeight+10})`)
-                                    .call(ivyBBottomAxis);
+                    let ivyBBottomAxis = d3.axisBottom(qScale);
+                    ivyBChart.append("g")
+                                .attr("class", "bottom-axis")
+                                .attr("transform", `translate(${ivy_Bmargins.left}, ${ivy_Bmargins.top+ivyBChartHeight+10})`)
+                                .call(ivyBBottomAxis);
 
 
-                        let clickedSchool = d.name;
+                    ivyBChartArea.selectAll("rect")
+                        .data(filteredData.flatMap(d =>
+                            ["par_q1", "par_q2", "par_q3", "par_q4", "par_q5"].map((key, index) => ({
+                                school: d.name,
+                                value: d[key],
+                                key: "Q" + (index + 1)
+                            }))
+                        ))
+                        .join("rect")
+                        .transition().duration(500)
+                        .attr("x", d => qScale(d.key) + 10)
+                        .attr("y", d => percentBScale(d.value))
+                        .attr("width", 35)
+                        .attr("height", d => ivyBChartHeight - percentBScale(d.value))
+                        .attr("fill", d => colorScale(d.school));
 
-                        let filteredData = parentBins.filter(item => item.name === clickedSchool);
+                    ivyBChartArea.raise();
 
-                        ivyBChartArea.selectAll("rect")
-                            .data(filteredData.flatMap(d =>
-                                ["par_q1", "par_q2", "par_q3", "par_q4", "par_q5"].map((key, index) => ({
-                                    school: d.name,
-                                    value: d[key],
-                                    key: "Q" + (index + 1)
-                                }))
-                            ))
-                            .join("rect")
-                            .transition().duration(500)
-                            .attr("x", d => qScale(d.key) + 30)
-                            .attr("y", d => percentBScale(d.value))
-                            .attr("width", 35)
-                            .attr("height", d => ivyBChartHeight - percentBScale(d.value))
-                            .attr("fill", d => colorScale(d.school));
+                    let BLabel = ivyBChartArea.append("text");
 
-                        ivyBChartArea.raise();
+                    ivyBChartArea.selectAll("rect").on("mouseover", function(event, d){
+                        d3.select(this)
+                          .attr("stroke", "black")
+                          .attr("stroke-width", 2);
 
-                        let BLabel = ivyBChartArea.append("text");
+                          // Label.text((d[selectedOption] * 100).toFixed(2) + "%")
 
-                        ivyBChartArea.selectAll("rect").on("mouseover", function(event, d){
-                            d3.select(this)
-                              .attr("stroke", "black")
-                              .attr("stroke-width", 2);
-
-                              BLabel.text((d.value).toFixed(2)+"%")
-                                  .attr("x", qScale(d.key)+28)
-                                  .attr("y", percentBScale(d.value)-5)
-                                  .raise();
-                        });
-
-                        ivyBChartArea.selectAll("rect").on("mouseout", function(event, d){
-                            d3.select(this)
-                              .attr("stroke", "white")
-                              .attr("stroke-width", 0);
-
-                              BLabel.text("");
-                        });
+                          BLabel.text((d.value*100).toFixed(2)+"%")
+                              .attr("x", qScale(d.key)+8)
+                              .attr("y", percentBScale(d.value)-5)
+                              .raise();
                     });
 
+                    ivyBChartArea.selectAll("rect").on("mouseout", function(event, d){
+                        d3.select(this)
+                          .attr("stroke", "white")
+                          .attr("stroke-width", 0);
 
+                          BLabel.text("");
+                    });
+
+                };
+
+                updateBonusChart('Cornell');
+
+
+                ivyChartArea.selectAll("rect")
+                    .on("click", function(event, d) {
+                        updateBonusChart(d.name);
+                });
 
             }
 
             requestData();
+
         </script>
     </body>
 </html>
