@@ -202,10 +202,8 @@
                 let yearExtent = d3.extent(meanIncomes, m=>m.Year);
 
                 let yearScale = d3.scaleLinear().domain([yearExtent[0]-0.5, yearExtent[1]+0.5]).range([0, lchartWidth]);
-                let lowIncomeExtent = d3.extent(meanIncomes, m=>m.current_firstQuintile);
                 let highIncomeExtent = d3.extent(meanIncomes, m=>m.current_fifthQuintile);
-                let middleIncomeExtent = d3.extent(meanIncomes, m=>m.current_thirdQuintile);
-                // let dollarScale = d3.scaleLinear().domain([lowIncomeExtent[0], highIncomeExtent[1]]).range([lchartHeight, 0]);
+                let middleIncomeExtent = d3.extent(meanIncomes, m=>m.adjusted_thirdQuintile);
                 let dollarScale = d3.scaleLinear().domain([0, middleIncomeExtent[1]+5000]).range([lchartHeight, 0]);
 
                 // axes
@@ -402,36 +400,17 @@
                 })
 
                 // line chart hover
-                let barLabel = lineChartArea.append("text");
-                let backgroundBox = lineChartArea.append("rect")
-                                                 .attr("width", 100)
-                                                 .attr("height", 25)
-                                                 .attr("fill", "white")
-                                                 .attr("visibility", "hidden");
+                let barLabel = lineChartArea.append("text")
+                                            .attr("x", 10)
+                                            .attr("y", 50)
+                                            .attr("font-size", 20);
 
                 lineChartArea.selectAll("rect").on("mouseover", function(event, d){
                     d3.select(this)
                       .attr("stroke", "black")
                       .attr("stroke-width", 2);
-                    if (d.Year<1974){
-                        barLabel.text(d.Year+": $"+d[currentDollarType+"_thirdQuintile"])
-                            .attr("x", yearScale(1974)-110)
-                            .attr("y", dollarScale(d[currentDollarType+"_thirdQuintile"]))
+                    barLabel.text(d.Year+": $"+d[currentDollarType+"_thirdQuintile"])
                             .raise();
-                        backgroundBox.attr("x", yearScale(1974)-110)
-                                     .attr("y", dollarScale(d[currentDollarType+"_thirdQuintile"])-20)
-                                     .attr("visibility", "visible");
-                    }
-                    else{
-                        barLabel.text(d.Year+": $"+d[currentDollarType+"_thirdQuintile"])
-                            .attr("x", yearScale(d.Year)-100)
-                            .attr("y", dollarScale(d[currentDollarType+"_thirdQuintile"]))
-                            .raise();
-                        backgroundBox.attr("x", yearScale(d.Year)-100)
-                                     .attr("y", dollarScale(d[currentDollarType+"_thirdQuintile"])-20)
-                                     .attr("visibility", "visible");
-                    }
-
                 });
 
                 lineChartArea.selectAll("rect").on("mouseout", function(){
