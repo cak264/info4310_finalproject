@@ -203,7 +203,7 @@
                 let yearExtent = d3.extent(meanIncomes, m=>m.Year);
 
                 let yearScale = d3.scaleLinear().domain([yearExtent[0]-0.5, yearExtent[1]+0.5]).range([0, lchartWidth]);
-                let highIncomeExtent = d3.extent(meanIncomes, m=>m.current_fifthQuintile);
+                let highIncomeExtent = d3.extent(meanIncomes, m=>m.adjusted_fifthQuintile);
                 let middleIncomeExtent = d3.extent(meanIncomes, m=>m.adjusted_thirdQuintile);
                 let dollarScale = d3.scaleLinear().domain([0, middleIncomeExtent[1]+5000]).range([lchartHeight, 0]);
                 //input institution type, output a color
@@ -423,21 +423,6 @@
 
                 let line_qScale = d3.scaleBand().domain(['Q1', 'Q2', 'Q3', 'Q4', 'Q5']).range([0, lBchartWidth]).padding(0.01);
 
-                let dollarBScale = d3.scaleLinear().domain([0, highIncomeExtent[1]]).range([lBchartHeight, 0]);
-
-                let lineBLeftAxis = d3.axisLeft(dollarBScale);
-                lineBChart.append("g")
-                            .attr("class", "left-axis")
-                            .attr("transform", `translate(${lc_Bmargins.left-10}, ${lc_Bmargins.top})`)
-                            .call(lineBLeftAxis);
-                let lineBLeftAxisGridlines = d3.axisLeft(dollarBScale)
-                                            .tickSize(-lBchartWidth-10)
-                                            .tickFormat('');
-                lineBChart.append("g")
-                            .attr("transform", `translate(${lc_Bmargins.left-10}, ${lc_Bmargins.top})`)
-                            .attr("class", "gridlines")
-                            .call(lineBLeftAxisGridlines);
-
                 let lineBBottomAxis = d3.axisBottom(line_qScale);
                 lineBChart.append("g")
                             .attr("class", "bottom-axis")
@@ -476,7 +461,22 @@
                         d3.select(This).attr("fill", "#bab8b8");
                         lineBChart.attr("visibility", "visible");
                     };
-                    
+
+                    // y axis
+                    let dollarBScale = d3.scaleLinear().domain([0, d[currentDollarType+"_fifthQuintile"]]).range([lBchartHeight, 0]);
+
+                    let lineBLeftAxis = d3.axisLeft(dollarBScale);
+                    lineBChart.append("g")
+                                .attr("class", "left-axis")
+                                .attr("transform", `translate(${lc_Bmargins.left-10}, ${lc_Bmargins.top})`)
+                                .call(lineBLeftAxis);
+                    let lineBLeftAxisGridlines = d3.axisLeft(dollarBScale)
+                                                .tickSize(-lBchartWidth-10)
+                                                .tickFormat('');
+                    lineBChart.append("g")
+                            .attr("transform", `translate(${lc_Bmargins.left-10}, ${lc_Bmargins.top})`)
+                            .attr("class", "gridlines")
+                            .call(lineBLeftAxisGridlines);
 
                     //name mappings
                     var quintileMappings = {
