@@ -205,6 +205,8 @@
                 let highIncomeExtent = d3.extent(meanIncomes, m=>m.current_fifthQuintile);
                 let middleIncomeExtent = d3.extent(meanIncomes, m=>m.adjusted_thirdQuintile);
                 let dollarScale = d3.scaleLinear().domain([0, middleIncomeExtent[1]+5000]).range([lchartHeight, 0]);
+                //input institution type, output a color
+                let lineColorScale = d3.scaleOrdinal().range(["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#e6ab02"]);
 
                 // axes
                 let lineLeftAxis = d3.axisLeft(dollarScale);
@@ -239,9 +241,10 @@
                                 .attr("class", "vis1Bar")
                                 .attr("x", m=> yearScale(m.Year)-4)
                                 .attr("y", m=> dollarScale(m[dol_type+"_thirdQuintile"]))
-                                .attr("width", 10)
+                                .attr("width", 12)
                                 .attr("height", m=> lchartHeight-dollarScale(m[dol_type+"_thirdQuintile"]))
-                                .attr("fill", "steelblue");
+                                .attr("fill", "#e0e0e0")
+                                .attr("opacity", 1);
 
                 }
 
@@ -258,7 +261,7 @@
                                 .attr("id", inst_type+"_"+dol_type)
                                 .attr("class", "tuitionLine")
                                 .attr("fill", "none")
-                                .attr("stroke", "black")
+                                .attr("stroke", lineColorScale(inst_type))
                                 .attr("stroke-width", 3)
                                 .attr("d", line);
                 };
@@ -407,7 +410,7 @@
 
                 lineChartArea.selectAll("rect").on("mouseover", function(event, d){
                     d3.select(this)
-                      .attr("stroke", "black")
+                      .attr("stroke", "#bab8b8")
                       .attr("stroke-width", 2);
                     barLabel.text(d.Year+": $"+d[currentDollarType+"_thirdQuintile"])
                             .raise();
@@ -497,7 +500,7 @@
                                 .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
                                 .attr("width", 35)
                                 .attr("height", m=> lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]))
-                                .attr("fill", "steelblue");
+                                .attr("fill", "#bab8b8");
                         }
 
                     })
@@ -511,7 +514,8 @@
                                 .attr("x2", lBchartWidth)
                                 .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
                                 .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                                .attr("stroke", "red")
+                                .attr("stroke", lineColorScale("all"))
+                                .attr("stroke-width", 3)
                                 .attr("id", "tuitionLine");
                     }
                     else{
@@ -605,7 +609,7 @@
                     ratioChartArea.append("path").datum(ratios)
                                 .attr("class", "ratioLine")
                                 .attr("fill", "none")
-                                .attr("stroke", "red")
+                                .attr("stroke", lineColorScale("all"))
                                 .attr("stroke-width", 3)
                                 .attr("d", ratioLine);
                     ratioChartArea.raise();
