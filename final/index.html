@@ -154,6 +154,7 @@
             const lBchartHeight = lc_Bheight - lc_Bmargins.top - lc_Bmargins.bottom;
             const lineBChartArea = lineBChart.append("g")
                                            .attr("transform", `translate(${lc_Bmargins.left}, ${lc_Bmargins.top})`);
+            lineBChart.attr("visibility", "hidden");
 
             let ratioChart = d3.select("#ratio-chart");
             const ratio_width = ratioChart.attr("width");
@@ -310,7 +311,7 @@
                 let degree_types = ["All", "Four", "Two"];
                 degree_types.forEach(type => {
                     let block = degreeInputs.append("g");
-                    block.append("input").attr("type", "checkbox").attr("id", "check2"+type);
+                    block.append("input").attr("type", "radio").attr("id", "check2"+type);
                     block.append("label").attr("for", "check2"+type).text(type+" Year");
                 })
                 d3.select("#check2All").property("checked", true);
@@ -369,10 +370,6 @@
                         }
                     }
                     else{
-                        if (!this.checked){
-                            d3.select(this).property("checked", true);
-                            return;
-                        };
                         if (type == "all"){
                             currentDegreeLength="four_and_two_year";
                             d3.select("#check2Four").property("checked", false);
@@ -420,7 +417,6 @@
                     d3.select(this)
                       .attr("stroke", "none");
                     barLabel.text("");
-                    backgroundBox.attr("visibility", "hidden");
                 });
 
                 // Line Chart Bonus
@@ -460,14 +456,27 @@
 
                 lineChartArea.selectAll("rect").on("click", function(event, d){
                     console.log(d);
-                    updateDash(d);
+                    updateDash(this, d);
                     currentSelectedYear = d;
 
                 })
 
-                function updateDash(d){
+                function updateDash(This, d){
                     console.log(d);
+                    console.log(This);
+                    let selectedRect = d3.select(This);
                     lineBonusTitle.text("Income by Quintile for "+ d["Year"].toString());
+                    //if year is already selected
+                    if (selectedRect.attr("fill")=="#bab8b8"){
+                        d3.select(This).attr("fill", "#e0e0e0");
+                        lineBChart.attr("visibility", "hidden");
+                    }
+                    else{
+                        lineChartArea.selectAll("rect").attr("fill", "#e0e0e0");
+                        d3.select(This).attr("fill", "#bab8b8");
+                        lineBChart.attr("visibility", "visible");
+                    };
+                    
 
                     //name mappings
                     var quintileMappings = {
