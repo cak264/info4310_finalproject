@@ -27,7 +27,7 @@
                 align-items: center;
             }
 
-            #vis4, #vis4_title {
+            #vis4, #vis4_title, #explanation {
                 display: none;
             }
 
@@ -95,6 +95,13 @@
                 width: 420px;
             }
 
+            .vis4 {
+                width: 400px;
+                padding-left: 40px;
+                padding-top: 0px;
+                margin-top: 0px;
+            }
+
 
 
         </style>
@@ -138,6 +145,10 @@
             <div id="vis4">
                 <h3 id="vis4_title" class="title"></h2>
                 <svg width="400" height="300" id="ivy-bonus"></svg>
+                <p class="vis4"><i>Note: Q1 corresponds to the lowest income quintile, and Q5 corresponds to the highest.</i></p>
+                <p class="vis4" id="q_popup"></p>
+                <p class="vis4" id="explanation"><i>All ranks are relative to peer institutions, with rank 1
+                being the school that has accepted the highest proportion of students from the relevant income group.</i><p>
             </div>
         </div>
 
@@ -888,7 +899,8 @@
                                 ["par_q1", "par_q2", "par_q3", "par_q4", "par_q5"].map((key, index) => ({
                                     school: d.name,
                                     value: d[key],
-                                    key: "Q" + (index + 1)
+                                    key: "Q" + (index + 1),
+                                    original: key
                                 }))
                             ))
                             .join("rect")
@@ -901,19 +913,37 @@
 
                         ivyBChartArea.raise();
 
+
+                        function calculateRank(key, school) {
+                            let newData = parentBins.filter(d => d.name !== "National Avg");
+                            console.log(school);
+
+                            let valuesForKey = newData.map(d => d[key]);
+
+                            let sortedValues = valuesForKey.slice().sort((a, b) => a - b);
+                            let schoolIndex = sortedValues.findIndex(value => value === newData.find(d => d.name === school)[key]);
+
+                            let rank = sortedValues.length - schoolIndex;
+                            return rank + "/" + sortedValues.length;
+                        }
+
                         let BLabel = ivyBChartArea.append("text");
+                        let QTooltip = d3.select("#q_popup");
 
                         ivyBChartArea.selectAll("rect").on("mouseover", function(event, d){
                             d3.select(this)
-                              .attr("stroke", "black")
-                              .attr("stroke-width", 2);
+                                .attr("stroke", "black")
+                                .attr("stroke-width", 2);
 
-                              // Label.text((d[selectedOption] * 100).toFixed(2) + "%")
+                             BLabel.text((d.value*100).toFixed(2)+"%")
+                                .attr("x", qScale(d.key)+8)
+                                .attr("y", percentBScale(d.value)-5)
+                                .raise();
 
-                              BLabel.text((d.value*100).toFixed(2)+"%")
-                                  .attr("x", qScale(d.key)+8)
-                                  .attr("y", percentBScale(d.value)-5)
-                                  .raise();
+                            let rank = calculateRank(d.original, d.school);
+
+                            QTooltip.text(d.school + " " + d.key + " rank: " + rank);
+                            d3.select("#explanation").style("display", "block");
                         });
 
                         ivyBChartArea.selectAll("rect").on("mouseout", function(event, d){
@@ -922,6 +952,9 @@
                               .attr("stroke-width", 0);
 
                               BLabel.text("");
+
+                              QTooltip.text("");
+                              d3.select("#explanation").style("display", "none");
                         });
 
                 });
