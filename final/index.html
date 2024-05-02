@@ -279,7 +279,7 @@
                                 .attr("y", m=> dollarScale(m[dol_type+"_thirdQuintile"]))
                                 .attr("height", m=> lchartHeight-dollarScale(m[dol_type+"_thirdQuintile"]));
                     }
-                    
+
                 }
 
                 function createLine(inst_type, dol_type, degree_length){
@@ -349,7 +349,7 @@
                                             .style("color", lineColorScale(type.toLowerCase()))
                                             .style("font-weight", "bold");
                     }
-                    
+
                 });
                 d3.select("#check1All").property("checked", true);
 
@@ -524,7 +524,7 @@
                             lineBChart.attr("visibility", "visible");
                         };
                     }
-                    
+
                     if (d!=undefined){
                         lineBonusTitle.text("Income by Quintile for "+ d["Year"].toString());
                     }
@@ -589,7 +589,7 @@
                         hasBeenClicked = true;
                         tuitionLine = true;
                     }
-                    
+
 
 
                     // adding hovering to bonus chart
@@ -882,26 +882,42 @@
 
 
 
+                let previousClickedRect = null;
+
 
                 ivyChartArea.selectAll("rect")
                     .on("click", function(event, d) {
 
-                        d3.select("#vis4")
-                            .style("display", "flex");
-                        d3.select("#vis4_title")
-                            .style("display", "block");
+                        if (d === previousClickedRect) {
 
-                        //
-                        d3.select(this)
-                            .attr("fill-opacity", 1);
+                            ivyBChart.selectAll("rect").remove();
 
-                        ivyChartArea.selectAll("rect")
-                            .filter(bar => bar !== d)
-                            .attr("fill-opacity", 0.6);
+                            d3.select("#vis4").style("display", "none");
+                            d3.select("#vis4_title").style("display", "none");
 
+                            ivyChartArea.selectAll("rect")
+                                .attr("fill-opacity", 1);
 
-                // function updateBonusChart(schoolName) {
-                //     const filteredData = parentBins.filter(d => d.name === schoolName);
+                            previousClickedRect = null;
+
+                        } else {
+
+                            previousClickedRect = d;
+
+                            d3.select("#vis4")
+                                .style("display", "flex");
+                            d3.select("#vis4_title")
+                                .style("display", "block");
+
+                            d3.select(this)
+                                .attr("fill-opacity", 1);
+
+                            ivyChartArea.selectAll("rect")
+                                .filter(bar => bar !== d)
+                                .attr("fill-opacity", 0.6);
+
+                        };
+
 
                         d3.select("#vis4_title").text("Parental Income Distribution At " + d.name);
 
@@ -1014,16 +1030,10 @@
                         d3.select("#vis4").style("display", "none");
                         d3.select("#vis4_title").style("display", "none");
 
+                        previousClickedRect = null;
+
                     }
                 });
-
-                // updateBonusChart('Cornell');
-                //
-                //
-                // ivyChartArea.selectAll("rect")
-                //     .on("click", function(event, d) {
-                //         updateBonusChart(d.name);
-                // });
 
             }
 
