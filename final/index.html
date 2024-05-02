@@ -81,12 +81,14 @@
             }
 
             #vis1Container {
-                width: 1550px;
+                width: 1450px;
                 position: relative;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                margin-bottom: 50px;
+                margin-bottom: 100px;
+                padding-top: 50px;
+                padding-bottom: 20px;
             }
 
             #bonus-charts {
@@ -115,7 +117,6 @@
         </div>
 
         <div id="vis1Container" style="border: 1px solid black">
-            <h2 class="title">Mean Income of Middle Class Americans and College Tuition Over Time</h2>
             <div id="vis1">
                 <g id="filters"></g>
                 <svg width="800" height="600" id="line-chart"></svg>
@@ -166,7 +167,7 @@
             let lineBChart = d3.select("#line-chart-bonus");
             const lc_Bwidth = lineBChart.attr("width");
             const lc_Bheight= lineBChart.attr("height");
-            const lc_Bmargins={top: 10, right: 10, bottom: 50, left: 60};
+            const lc_Bmargins={top: 20, right: 10, bottom: 50, left: 60};
             const lBchartWidth = lc_Bwidth - lc_Bmargins.left - lc_Bmargins.right;
             const lBchartHeight = lc_Bheight - lc_Bmargins.top - lc_Bmargins.bottom;
             const lineBChartArea = lineBChart.append("g")
@@ -176,7 +177,7 @@
             let ratioChart = d3.select("#ratio-chart");
             const ratio_width = ratioChart.attr("width");
             const ratio_height= ratioChart.attr("height");
-            const ratio_margins={top: 10, right: 10, bottom: 50, left: 60};
+            const ratio_margins={top: 20, right: 10, bottom: 50, left: 60};
             const ratiochartWidth = ratio_width - ratio_margins.left - ratio_margins.right;
             const ratiochartHeight = ratio_height - ratio_margins.top - ratio_margins.bottom;
             const ratioChartArea = ratioChart.append("g")
@@ -226,6 +227,13 @@
                 //input institution type, output a color
                 let lineColorScale = d3.scaleOrdinal().range(["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#e6ab02"]);
 
+                // title
+                let lineTitle = lineChart.append("text")
+                                                   .attr("x", 70)
+                                                   .attr("y", 15)
+                                                   .style("font-size", 23)
+                                                   .style("font-weight", "bold")
+                                                   .text("Mean Income of Middle Class Americans and College Tuition Over Time");
                 // axes
                 let lineLeftAxis = d3.axisLeft(dollarScale);
                 lineChart.append("g")
@@ -248,22 +256,30 @@
                 lineChartArea.raise();
 
 
-
+                let barsCreated = false;
                 // creating tuition line
                 function updateBars(dol_type) {
 
                     // create bars
-                    lineChartArea.selectAll("rect.vis1Bar").data(meanIncomes)
+                    if (!barsCreated){
+                        lineChartArea.selectAll("rect.vis1Bar").data(meanIncomes)
                                 .join("rect")
-                                .transition().duration(500)
                                 .attr("class", "vis1Bar")
                                 .attr("x", m=> yearScale(m.Year)-4)
                                 .attr("y", m=> dollarScale(m[dol_type+"_thirdQuintile"]))
                                 .attr("width", 12)
                                 .attr("height", m=> lchartHeight-dollarScale(m[dol_type+"_thirdQuintile"]))
-                                .attr("fill", "#e0e0e0")
-                                .attr("opacity", 1);
-
+                                .attr("fill", "#e0e0e0");
+                        barsCreated = true;
+                    }
+                    else {
+                        lineChartArea.selectAll("rect.vis1Bar")
+                                .transition().duration(500)
+                                .attr("x", m=> yearScale(m.Year)-4)
+                                .attr("y", m=> dollarScale(m[dol_type+"_thirdQuintile"]))
+                                .attr("height", m=> lchartHeight-dollarScale(m[dol_type+"_thirdQuintile"]));
+                    }
+                    
                 }
 
                 function createLine(inst_type, dol_type, degree_length){
@@ -317,9 +333,23 @@
                 let institutionInputs = filterPanel.append("div").attr("id", "institutionInputs");
                 let inst_types = ["All", "Public", "Private", "Nonprofit", "For-Profit"];
                 inst_types.forEach(type => {
-                    let block = institutionInputs.append("g");
-                    block.append("input").attr("type", "checkbox").attr("id", "check1"+type);
-                    block.append("label").attr("for", "check1"+type).text(type);
+                    if (type == "Nonprofit" || type == "For-Profit"){
+                        let block = institutionInputs.append("g");
+                        block.append("input").attr("type", "checkbox").attr("id", "check1"+type).style("margin-left", 20);
+                        block.append("label").attr("for", "check1"+type)
+                                            .text(type)
+                                            .style("color", lineColorScale("private-"+type.toLowerCase()))
+                                            .style("font-weight", "bold");
+                    }
+                    else{
+                        let block = institutionInputs.append("g");
+                        block.append("input").attr("type", "checkbox").attr("id", "check1"+type);
+                        block.append("label").attr("for", "check1"+type)
+                                            .text(type)
+                                            .style("color", lineColorScale(type.toLowerCase()))
+                                            .style("font-weight", "bold");
+                    }
+                    
                 });
                 d3.select("#check1All").property("checked", true);
 
@@ -339,7 +369,7 @@
                     deleteAllLines();
                     updateBars(currentDollarType);
                     addSelectedLines();
-                    updateDash(currentSelectedYear);
+                    updateDash(undefined, currentSelectedYear);
                     updateRatio();
                 })
 
@@ -348,7 +378,7 @@
                     deleteAllLines();
                     updateBars(currentDollarType);
                     addSelectedLines();
-                    updateDash(currentSelectedYear);
+                    updateDash(undefined, currentSelectedYear);
                     updateRatio();
                 })
 
@@ -439,6 +469,23 @@
                 // Line Chart Bonus
 
                 let line_qScale = d3.scaleBand().domain(['Q1', 'Q2', 'Q3', 'Q4', 'Q5']).range([0, lBchartWidth]).padding(0.01);
+                let dollarBScale = d3.scaleLinear().domain([0, highIncomeExtent[1]+3000]).range([lBchartHeight, 0]);
+
+
+                lineBChart.selectAll(".left-axis, .gridlines").remove();
+
+                let lineBLeftAxis = d3.axisLeft(dollarBScale);
+                lineBChart.append("g")
+                            .attr("class", "left-axis")
+                            .attr("transform", `translate(${lc_Bmargins.left-10}, ${lc_Bmargins.top})`)
+                            .call(lineBLeftAxis);
+                let lineBLeftAxisGridlines = d3.axisLeft(dollarBScale)
+                                            .tickSize(-lBchartWidth-10)
+                                            .tickFormat('');
+                lineBChart.append("g")
+                        .attr("transform", `translate(${lc_Bmargins.left-10}, ${lc_Bmargins.top})`)
+                        .attr("class", "gridlines")
+                        .call(lineBLeftAxisGridlines);
 
                 let lineBBottomAxis = d3.axisBottom(line_qScale);
                 lineBChart.append("g")
@@ -449,9 +496,9 @@
                 let hasBeenClicked = false;
                 let tuitionLine = false;
                 lineBChartArea.raise();
-                let lineBonusTitle = lineBChartArea.append("text")
-                                                   .attr("x", 55)
-                                                   .attr("y", 10)
+                let lineBonusTitle = lineBChart.append("text")
+                                                   .attr("x", 100)
+                                                   .attr("y", 15)
                                                    .style("font-size", 20)
                                                    .style("font-weight", "bold");
                 let percentLabel = lineBChartArea.append("text");
@@ -464,36 +511,23 @@
                 })
 
                 function updateDash(This, d){
-                    console.log(d);
-                    console.log(This);
-                    let selectedRect = d3.select(This);
-                    lineBonusTitle.text("Income by Quintile for "+ d["Year"].toString());
-                    //if year is already selected
-                    if (selectedRect.attr("fill")=="#bab8b8"){
-                        d3.select(This).attr("fill", "#e0e0e0");
-                        lineBChart.attr("visibility", "hidden");
+                    if (This!=undefined){
+                        let selectedRect = d3.select(This);
+                        //if year is already selected
+                        if (selectedRect.attr("fill")=="#bab8b8"){
+                            d3.select(This).attr("fill", "#e0e0e0");
+                            lineBChart.attr("visibility", "hidden");
+                        }
+                        else{
+                            lineChartArea.selectAll("rect").attr("fill", "#e0e0e0");
+                            d3.select(This).attr("fill", "#bab8b8");
+                            lineBChart.attr("visibility", "visible");
+                        };
                     }
-                    else{
-                        lineChartArea.selectAll("rect").attr("fill", "#e0e0e0");
-                        d3.select(This).attr("fill", "#bab8b8");
-                        lineBChart.attr("visibility", "visible");
-                    };
-
-                    // y axis
-                    let dollarBScale = d3.scaleLinear().domain([0, d[currentDollarType+"_fifthQuintile"]]).range([lBchartHeight, 0]);
-
-                    let lineBLeftAxis = d3.axisLeft(dollarBScale);
-                    lineBChart.append("g")
-                                .attr("class", "left-axis")
-                                .attr("transform", `translate(${lc_Bmargins.left-10}, ${lc_Bmargins.top})`)
-                                .call(lineBLeftAxis);
-                    let lineBLeftAxisGridlines = d3.axisLeft(dollarBScale)
-                                                .tickSize(-lBchartWidth-10)
-                                                .tickFormat('');
-                    lineBChart.append("g")
-                            .attr("transform", `translate(${lc_Bmargins.left-10}, ${lc_Bmargins.top})`)
-                            .attr("class", "gridlines")
-                            .call(lineBLeftAxisGridlines);
+                    
+                    if (d!=undefined){
+                        lineBonusTitle.text("Income by Quintile for "+ d["Year"].toString());
+                    }
 
                     //name mappings
                     var quintileMappings = {
@@ -532,27 +566,30 @@
                     })
 
                     // add tuition line
-                    selectedYearTuition = tuition.filter(t=> t.year == d.Year & t.institution_type == "all" & t.dollar_type == currentDollarType);
+                    if (d!=undefined){
+                        selectedYearTuition = tuition.filter(t=> t.year == d.Year & t.institution_type == "all" & t.dollar_type == currentDollarType);
 
-                    if (!tuitionLine){
-                        lineBChartArea.append("line")
-                                .attr("x1", 0)
-                                .attr("x2", lBchartWidth)
-                                .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                                .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                                .attr("stroke", lineColorScale("all"))
-                                .attr("stroke-width", 3)
-                                .attr("id", "tuitionLine");
+                        if (!tuitionLine){
+                            lineBChartArea.append("line")
+                                    .attr("x1", 0)
+                                    .attr("x2", lBchartWidth)
+                                    .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                                    .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                                    .attr("stroke", lineColorScale("all"))
+                                    .attr("stroke-width", 3)
+                                    .attr("id", "tuitionLine");
+                        }
+                        else{
+                            d3.select("#tuitionLine")
+                            .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                            .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year));
+                        }
+
+
+                        hasBeenClicked = true;
+                        tuitionLine = true;
                     }
-                    else{
-                        d3.select("#tuitionLine")
-                        .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                        .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year));
-                    }
-
-
-                    hasBeenClicked = true;
-                    tuitionLine = true;
+                    
 
 
                     // adding hovering to bonus chart
@@ -586,6 +623,13 @@
                 }
 
                 // ratio chart
+
+                let ratioTitle = ratioChart.append("text")
+                                                   .attr("x", 100)
+                                                   .attr("y", 15)
+                                                   .style("font-size", 20)
+                                                   .style("font-weight", "bold")
+                                                   .text("Tuition to Mean Income Ratio");
 
                 let ratioScale = d3.scaleLinear().domain([0.10, 0.5]).range([ratiochartHeight, 0]);
                 let ratioYearScale = d3.scaleLinear().domain([yearExtent[0]-0.5, yearExtent[1]+0.5]).range([0, ratiochartWidth]);
