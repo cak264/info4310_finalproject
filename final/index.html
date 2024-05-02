@@ -127,8 +127,10 @@
         <div id="vis3">
             <div id ="ivy_filters">
                 <h3>Instructions</h3>
-                <p>Hover over a bar to see that school's exact percentage of parents belonging to the income group selected,
-                     and click to see a breakdown of the parent income distribution for the selected school.</p>
+                <p><b>Hover</b> over a bar to see that school's exact percentage of parents belonging to the income group selected,
+                     and <b>click</b> to see a breakdown of the parent income distribution for the selected school.</p>
+                <p><i>Note: "National Avg" refers to the average percentage of students at a university belonging to the selected
+                    income group across all US universities.</i></p>
                 <h3>Filters</h3>
             </div>
             <svg width="800" height="600" id="ivy-main"></svg>
@@ -700,7 +702,7 @@
 
 
                 function updateChart(selectedOption) {
-                    d3.select("#vis3_title").text("A Look At The Percentage of Students Belonging To The "+ income_bins[selectedOption] + " Across Top US Universities");
+                    d3.select("#vis3_title").text("% of Students Belonging To The "+ income_bins[selectedOption] + " Across Top US Universities");
 
                     let schools = parentBins.map(s=>s.name);
                     console.log(schools);
@@ -711,7 +713,10 @@
 
                     ivyChart.selectAll(".left-axis, .gridlines, .bottom-axis").remove();
 
-                    let ivyLeftAxis = d3.axisLeft(percentScale);
+                    let ivyLeftAxis = d3.axisLeft(percentScale)
+                        .tickFormat(function(d) {
+                            return selectedOption === "par_toppt1pc" ? d3.format(".1%")(d) : d3.format(".0%")(d);
+                        });
                     ivyChart.append("g")
                                 .attr("class", "left-axis")
                                 .attr("transform", `translate(${ivy_margins.left-10}, ${ivy_margins.top})`)
@@ -778,7 +783,7 @@
                                 .join("rect")
                                 .transition().duration(500)
                                 .attr("class", "ivy_rect")
-                                .attr("x", s => schoolScale(s.name) + 10)
+                                .attr("x", s => schoolScale(s.name) + 8)
                                 .attr("y", p => percentScale(p[selectedOption]))
                                 .attr("width", 35)
                                 .attr("height", p => ivyChartHeight - percentScale(p[selectedOption]))
@@ -793,7 +798,7 @@
                           .attr("stroke-width", 2);
 
                           Label.text((d[selectedOption] * 100).toFixed(2) + "%")
-                              .attr("x", schoolScale(d.name) + 8)
+                              .attr("x", schoolScale(d.name) + 6)
                               .attr("y", percentScale(d[selectedOption])-5)
                               .raise();
                     });
@@ -852,7 +857,8 @@
 
                         ivyBChart.selectAll(".left-axis, .gridlines, .bottom-axis").remove();
 
-                        let ivyBLeftAxis = d3.axisLeft(percentBScale);
+                        let ivyBLeftAxis = d3.axisLeft(percentBScale)
+                            .tickFormat(d3.format(".0%"));
                         ivyBChart.append("g")
                                     .attr("class", "left-axis")
                                     .attr("transform", `translate(${ivy_Bmargins.left-10}, ${ivy_Bmargins.top})`)
@@ -887,7 +893,7 @@
                             ))
                             .join("rect")
                             .transition().duration(500)
-                            .attr("x", d => qScale(d.key) + 10)
+                            .attr("x", d => qScale(d.key) + 12)
                             .attr("y", d => percentBScale(d.value))
                             .attr("width", 35)
                             .attr("height", d => ivyBChartHeight - percentBScale(d.value))
