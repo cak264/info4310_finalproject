@@ -82,7 +82,7 @@
 
             #vis1Container {
                 width: 1450px;
-                position: relative;
+                position:relative;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
@@ -333,6 +333,7 @@
                 let institutionInputs = filterPanel.append("div").attr("id", "institutionInputs");
                 let inst_types = ["All", "Public", "Private", "Nonprofit", "For-Profit"];
                 inst_types.forEach(type => {
+                    console.log(type);
                     if (type == "Nonprofit" || type == "For-Profit"){
                         let block = institutionInputs.append("g");
                         block.append("input").attr("type", "checkbox").attr("id", "check1"+type).style("margin-left", 20);
@@ -392,7 +393,7 @@
                         let type = input.id.substring(6).toLowerCase();
                         if (inputSection == 1){
                             if (type=="nonprofit" || type=="for-profit"){
-                                createLine("private-"+type, currentDollarType, currentDegreeLength);
+                                createLine(type, currentDollarType, currentDegreeLength);
                             }
                             else{createLine(type, currentDollarType, currentDegreeLength);}
                         };
@@ -406,6 +407,9 @@
                         if (this.checked){
                             if (type=="nonprofit" || type=="for-profit"){
                                 createLine("private-"+type, currentDollarType, currentDegreeLength);
+                                console.log("before");
+                                addTuitionLine(currentSelectedYear, type);
+                                console.log("after");
                             }
                             else{createLine(type, currentDollarType, currentDegreeLength);}
                         }
@@ -511,6 +515,9 @@
                 })
 
                 function updateDash(This, d){
+                    console.log("d");
+                    console.log(d);
+                    console.log(This);
                     if (This!=undefined){
                         let selectedRect = d3.select(This);
                         //if year is already selected
@@ -577,7 +584,7 @@
                                     .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
                                     .attr("stroke", lineColorScale("all"))
                                     .attr("stroke-width", 3)
-                                    .attr("id", "tuitionLine");
+                                    .attr("id", "tuitionLineall");
                         }
                         else{
                             d3.select("#tuitionLine")
@@ -620,6 +627,30 @@
                         percentLabel.text("");
 
                         })
+                }
+
+                // add additional tuition lines
+                function addTuitionLine(year, type){
+                    console.log("in function");
+                    selectedYearTuition = tuition.filter(t=> t.year == year & t.institution_type == type & t.dollar_type == currentDollarType);
+                    console.log(lineBChartArea.select("#tuitionLine"+type));
+
+                    if (lineBChartArea.select("#tuitionLine"+type)==undefined){
+                        console.log("inside if");
+                        lineBChartArea.append("line")
+                                .attr("x1", 0)
+                                .attr("x2", lBchartWidth)
+                                .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                                .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                                .attr("stroke", lineColorScale(type))
+                                .attr("stroke-width", 3)
+                                .attr("id", "tuitionLine"+type);
+                    }
+                    else{
+                        d3.select("#tuitionLine"+type)
+                        .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                        .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year));
+                    }
                 }
 
                 // ratio chart
