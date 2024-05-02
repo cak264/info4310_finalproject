@@ -327,7 +327,7 @@
                         block.append("input").attr("type", "checkbox").attr("id", "check1"+type).style("margin-left", 20);
                         block.append("label").attr("for", "check1"+type)
                                             .text(type)
-                                            .style("color", lineColorScale("private-"+type.toLowerCase()))
+                                            .style("color", lineColorScale(type.toLowerCase()))
                                             .style("font-weight", "bold");
                     }
                     else{
@@ -381,7 +381,7 @@
                         let type = input.id.substring(6).toLowerCase();
                         if (inputSection == 1){
                             if (type=="nonprofit" || type=="for-profit"){
-                                createLine("private-"+type, currentDollarType, currentDegreeLength);
+                                createLine(type, currentDollarType, currentDegreeLength);
                             }
                             else{createLine(type, currentDollarType, currentDegreeLength);}
                         };
@@ -609,6 +609,11 @@
                         percentLabel.text("");
 
                         })
+                }
+
+                // add additional tuition lines
+                function addTuitionLine(year, type){
+
                 }
 
                 // ratio chart
