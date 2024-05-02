@@ -104,6 +104,10 @@
                 margin-top: 0px;
             }
 
+            #instructions {
+                margin-top: 0px;
+            }
+
 
 
         </style>
@@ -134,8 +138,8 @@
         <h2 id="vis3_title" class="title"></h2>
         <div id="vis3">
             <div id ="ivy_filters">
-                <h3>Instructions</h3>
-                <p><b>Hover</b> over a bar to see that school's exact percentage of parents belonging to the income group selected,
+                <h3 id="instructions">Instructions</h3>
+                <p><b>Hover</b> over a bar to learn more about the selected school in relation to the income group selected,
                      and <b>click</b> to see a breakdown of the parent income distribution for the selected school.</p>
                 <p><i>Note: "National Avg" refers to the average percentage of students at a university belonging to the selected
                     income group across all US universities.</i></p>
@@ -741,11 +745,11 @@
                     "par_top1pc": "Top 1%",
                     "par_top5pc": "Top 5%",
                     "par_top10pc": "Top 10%",
-                    "par_q5": "Top 20%",
-                    "par_q4": "20-40th Percentile",
-                    "par_q3": "40-60th Percentile",
-                    "par_q2": "60-80th Percentile",
-                    "par_q1": "Lowest 20%",
+                    "par_q5": "Top 20% (Q5)",
+                    "par_q4": "20-40th Percentile (Q4)",
+                    "par_q3": "40-60th Percentile (Q3)",
+                    "par_q2": "60-80th Percentile (Q2)",
+                    "par_q1": "Lowest 20% (Q1)",
 
                 };
 
@@ -766,10 +770,10 @@
 
 
                 // ivy chart
-                // stan original: #8C1515, chicago original: #800000
+                // stan original: #8C1515, chicago original: #800000, yale original: #00356B
                 let colorScale = d3.scaleOrdinal()
                     .domain(parentBins.map(s=>s.name))
-                    .range(["#4E3629", "#9BCBEB", "#B31B1B", "#046A38", "#003087", "#A41034", "#750014", "#FF671F", "#da0d1c", "#670E10", "#011F5B", "#00356B", "gray"]);
+                    .range(["#4E3629", "#9BCBEB", "#B31B1B", "#046A38", "#003087", "#A41034", "#750014", "#FF671F", "#da0d1c", "#670E10", "#011F5B", "#0F4D92", "gray"]);
 
                 let iconUrlMap = {
                     "Brown": "brown.png",
@@ -1003,7 +1007,7 @@
                         };
 
 
-                        d3.select("#vis4_title").text("Parental Income Distribution At " + d.name);
+                        d3.select("#vis4_title").text("Parental Income Distribution: " + d.name);
 
                         let qScale = d3.scaleBand().domain(['Q1', 'Q2', 'Q3', 'Q4', 'Q5']).range([0, ivyBChartWidth]).padding(0.1);
                         let maxPct = d3.max(parentBins, d => d3.max([d.par_q1, d.par_q2, d.par_q3, d.par_q4, d.par_q5]));
@@ -1013,7 +1017,7 @@
 
                         function calculateRank(key, school) {
                             let newData = parentBins.filter(d => d.name !== "National Avg");
-                            console.log(school);
+                            // console.log(school);
 
                             let valuesForKey = newData.map(d => d[key]);
 
