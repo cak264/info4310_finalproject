@@ -397,7 +397,7 @@
                         let type = input.id.substring(6).toLowerCase();
                         if (inputSection == 1){
                             if (type=="nonprofit" || type=="for-profit"){
-                                createLine(type, currentDollarType, currentDegreeLength);
+                                createLine("private"+type, currentDollarType, currentDegreeLength);
                             }
                             else{createLine(type, currentDollarType, currentDegreeLength);}
                         };
@@ -415,7 +415,10 @@
                                 addTuitionLine(currentSelectedYear, type);
                                 console.log("after");
                             }
-                            else{createLine(type, currentDollarType, currentDegreeLength);}
+                            else{
+                                createLine(type, currentDollarType, currentDegreeLength);
+                                addTuitionLine(currentSelectedYear, type);
+                            }
                         }
                         else {
                             if (type=="nonprofit" || type=="for-profit"){
@@ -535,50 +538,52 @@
                             lineBChart.attr("visibility", "visible");
                         };
                     }
-
-                    if (d!=undefined){
+                    
+                    if (d!=''){
                         lineBonusTitle.text("Income by Quintile for "+ d["Year"].toString());
+                    
+
+                        //name mappings
+                        var quintileMappings = {
+                            "current_firstQuintile": "Q1",
+                            "current_secondQuintile": "Q2",
+                            "current_thirdQuintile": "Q3",
+                            "current_fourthQuintile": "Q4",
+                            "current_fifthQuintile": "Q5",
+                            "adjusted_firstQuintile": "Q1",
+                            "adjusted_secondQuintile": "Q2",
+                            "adjusted_thirdQuintile": "Q3",
+                            "adjusted_fourthQuintile": "Q4",
+                            "adjusted_fifthQuintile": "Q5"
+                        };
+
+                        let quintiles = ["firstQuintile", "secondQuintile", "thirdQuintile", "fourthQuintile", "fifthQuintile"];
+
+                        quintiles.forEach(q =>{
+                            if (hasBeenClicked){
+                                lineBChartArea.select("rect."+q)
+                                            .transition().duration(500)
+                                            .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+15)
+                                            .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
+                                            .attr("height", lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]));
+                            }
+                            else{
+                                lineBChartArea.append("rect")
+                                    .attr("class", q)
+                                    .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+15)
+                                    .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
+                                    .attr("width", 35)
+                                    .attr("height", m=> lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]))
+                                    .attr("fill", "#bab8b8");
+                            }
+
+                        })
                     }
 
-                    //name mappings
-                    var quintileMappings = {
-                        "current_firstQuintile": "Q1",
-                        "current_secondQuintile": "Q2",
-                        "current_thirdQuintile": "Q3",
-                        "current_fourthQuintile": "Q4",
-                        "current_fifthQuintile": "Q5",
-                        "adjusted_firstQuintile": "Q1",
-                        "adjusted_secondQuintile": "Q2",
-                        "adjusted_thirdQuintile": "Q3",
-                        "adjusted_fourthQuintile": "Q4",
-                        "adjusted_fifthQuintile": "Q5"
-                    };
-
-                    let quintiles = ["firstQuintile", "secondQuintile", "thirdQuintile", "fourthQuintile", "fifthQuintile"];
-
-                    quintiles.forEach(q =>{
-                        if (hasBeenClicked){
-                            lineBChartArea.select("rect."+q)
-                                        .transition().duration(500)
-                                        .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+15)
-                                        .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
-                                        .attr("height", lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]));
-                        }
-                        else{
-                            lineBChartArea.append("rect")
-                                .attr("class", q)
-                                .attr("x", line_qScale(quintileMappings[currentDollarType+"_"+q])+15)
-                                .attr("y", dollarBScale(d[currentDollarType+"_"+q]))
-                                .attr("width", 35)
-                                .attr("height", m=> lBchartHeight-dollarBScale(d[currentDollarType+"_"+q]))
-                                .attr("fill", "#bab8b8");
-                        }
-
-                    })
-
                     // add tuition line
-                    if (d!=undefined){
-                        selectedYearTuition = tuition.filter(t=> t.year == d.Year & t.institution_type == "all" & t.dollar_type == currentDollarType);
+                    let selectedYearTuition = tuition.filter(t=> t.year == d.Year & t.institution_type == "all" & t.dollar_type == currentDollarType);
+                    if (d!=''){
+                        
 
                         if (!tuitionLine){
                             lineBChartArea.append("line")
