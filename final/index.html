@@ -66,8 +66,12 @@
             }
 
             #context {
-                width: 600px;
+                width: 1000px;
                 text-align: center;
+                position: relative;
+                left: 50%;
+                transform: translate(-50%);
+                top: 50px;
             }
 
 
@@ -83,9 +87,9 @@
             #vis1Container {
                 width: 1450px;
                 position:relative;
-                top: 50%;
+                top: 50px;
                 left: 50%;
-                transform: translate(-50%, -50%);
+                transform: translate(-50%);
                 margin-bottom: 100px;
                 padding-top: 50px;
                 padding-bottom: 20px;
@@ -108,6 +112,17 @@
                 margin-top: 0px;
             }
 
+            button:active, button:focus {
+                background-color: rgba(0, 0, 0, 0.149);
+                outline: 2px solid black;
+            }
+
+            button {
+                margin: 1px;
+            }
+
+            
+
 
 
         </style>
@@ -117,7 +132,7 @@
         <h1 class="title">How Economically Accessible Are US Universities?</h1>
         <h3 id="head_h3" class="title">Cameron Kull, cak264 & Marie Williams, mcw242</h3>
         <div id="context">
-            <p>To add: context for article</p>
+            <p>A relevant conversation being had in the news today is one about access to higher education, and the colleges that fall into the Ivy+ category (Ivy League institutions, as well as the University of Chicago, Duke, Stanford, and MIT) especially receive this attention. Our goal is to enhance the public’s understanding of the socioeconomic (in)accessibility of higher learning by visualizing the relationship between change in mean income and change in tuition costs over time. Through interactivity, users will be able to explore how the tuition for  different types of institutions compare to one another, and attempt to pinpoint where the gap in accessibility began to widen.</p>
         </div>
 
         <div id="vis1Container" style="border: 1px solid black">
@@ -234,7 +249,7 @@
                 // title
                 let lineTitle = lineChart.append("text")
                                                    .attr("x", 70)
-                                                   .attr("y", 15)
+                                                   .attr("y", 17)
                                                    .style("font-size", 23)
                                                    .style("font-weight", "bold")
                                                    .text("Mean Income of Middle Class Americans and College Tuition Over Time");
@@ -374,8 +389,9 @@
                     deleteAllLines();
                     updateBars(currentDollarType);
                     addSelectedLines();
-                    updateDash(undefined, currentSelectedYear);
                     updateRatio();
+                    updateDash(undefined, currentSelectedYear);
+                    
                 })
 
                 d3.select("#adjustedButton").on("click", function(){
@@ -383,8 +399,9 @@
                     deleteAllLines();
                     updateBars(currentDollarType);
                     addSelectedLines();
-                    updateDash(undefined, currentSelectedYear);
                     updateRatio();
+                    updateDash(undefined, currentSelectedYear);
+                    
                 })
 
                 // checkbox interactivity
@@ -437,6 +454,7 @@
                             deleteAllLines(type, currentDollarType);
                             addSelectedLines();
                             updateRatio();
+                            updateDash(undefined, currentSelectedYear);
                         }
                         else if (type == "four"){
                             let length = type+"_year"
@@ -446,6 +464,7 @@
                             deleteAllLines();
                             addSelectedLines();
                             updateRatio();
+                            updateDash(undefined, currentSelectedYear);
                         }
                         else{
                             let length = type+"_year"
@@ -455,6 +474,7 @@
                             deleteAllLines();
                             addSelectedLines();
                             updateRatio();
+                            updateDash(undefined, currentSelectedYear);
                         }
                     }
                 })
@@ -476,10 +496,18 @@
                                             .attr("font-size", 20)
                                             .style("font-weight", "bold");
 
+                // fix bug with outline not moving
                 let circle = ratioChartArea.append("circle")
                                            .attr("fill", lineColorScale("all"))
                                            .attr("r", 7)
                                            .attr("visibility", "hidden");
+                let circleOutline = ratioChartArea.append("circle")
+                                           .attr("fill", "none")
+                                           .attr("stroke", "black")
+                                           .attr("stroke-width", 2)
+                                           .attr("r", 7)
+                                           .attr("visibility", "hidden");
+                let circleLabel = ratioChartArea.append("text");
 
                 lineChartArea.selectAll("rect").on("mouseover", function(event, d){
                     d3.select(this)
@@ -546,14 +574,15 @@
 
                 lineChartArea.selectAll("rect").on("click", function(event, d){
                     // console.log(d);
-                    updateDash(this, d);
                     currentSelectedYear = d;
+                    updateDash(this, currentSelectedYear);
+                    
 
                 })
 
                 function updateDash(This, d){
-                    // console.log("d");
-                    // console.log(d);
+                    console.log("d");
+                    console.log(d);
                     // console.log(This);
                     if (This!=undefined){
                         let selectedRect = d3.select(This);
@@ -561,15 +590,25 @@
                         if (selectedRect.attr("fill")=="#bab8b8"){
                             d3.select(This).attr("fill", "#e0e0e0");
                             lineBChart.attr("visibility", "hidden");
+                            circleOutline.attr("visibility", "hidden");
+                            circleLabel.text("");
                         }
                         else{
                             lineChartArea.selectAll("rect").attr("fill", "#e0e0e0");
                             d3.select(This).attr("fill", "#bab8b8");
                             lineBChart.attr("visibility", "visible");
+                            // circle outline
+                            let selectedRatio = d3.filter(currentRatios, r=> r.year == d.Year);
+                            circleOutline.attr("cx", ratioYearScale(d.Year))
+                                        .attr("cy", ratioScale(selectedRatio[0].ratio))
+                                        .attr("visibility", "visible");
+                            circleLabel.attr("x", ratioYearScale(d.Year)-25)
+                                       .attr("y", ratioScale(selectedRatio[0].ratio)-15)
+                                       .text(selectedRatio[0].ratio.toString().substring(0, 5));
                         };
                     }
-                    
-                    if (d!=''){
+
+                    if (d!='' & d != undefined){
                         lineBonusTitle.text("Income by Quintile for "+ d["Year"].toString());
                     
 
@@ -611,24 +650,25 @@
                     }
 
                     // add tuition line
-                    let selectedYearTuition = tuition.filter(t=> t.year == d.Year & t.institution_type == "all" & t.dollar_type == currentDollarType);
-                    if (d!=''){
-                        
 
+                    let selectedYearTuition = tuition.filter(t=> t.year == d.Year & t.institution_type == "all" & t.dollar_type == currentDollarType);
+                    
+                    if (d!='' & d != undefined){
+                        
                         if (!tuitionLine){
                             lineBChartArea.append("line")
                                     .attr("x1", 0)
                                     .attr("x2", lBchartWidth)
-                                    .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                                    .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                                    .attr("y1", t=> dollarBScale(selectedYearTuition[0][currentDegreeLength]))
+                                    .attr("y2", t=> dollarBScale(selectedYearTuition[0][currentDegreeLength]))
                                     .attr("stroke", lineColorScale("all"))
                                     .attr("stroke-width", 3)
                                     .attr("id", "tuitionLineall");
                         }
                         else{
-                            d3.select("#tuitionLine")
-                            .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                            .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year));
+                            d3.select("#tuitionLineall")
+                            .attr("y1", t=> dollarBScale(selectedYearTuition[0][currentDegreeLength]))
+                            .attr("y2", t=> dollarBScale(selectedYearTuition[0][currentDegreeLength]));
                         }
 
 
@@ -740,6 +780,8 @@
                           .call(ratioBottomAxis);
 
                 // collect ratios
+
+                
 
                 let currentRatios = '';
 
