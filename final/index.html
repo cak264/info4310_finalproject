@@ -412,9 +412,13 @@
                         let type = input.id.substring(6).toLowerCase();
                         if (inputSection == 1){
                             if (type=="nonprofit" || type=="for-profit"){
-                                createLine("private"+type, currentDollarType, currentDegreeLength);
+                                createLine("private-"+type, currentDollarType, currentDegreeLength);
+                                // updateTuitionLine(currentSelectedYear, "private-"+type)
                             }
-                            else{createLine(type, currentDollarType, currentDegreeLength);}
+                            else{
+                                createLine(type, currentDollarType, currentDegreeLength);
+                                // updateTuitionLine(currentSelectedYear, type)
+                            }
                         };
                     })
                 }
@@ -426,13 +430,11 @@
                         if (this.checked){
                             if (type=="nonprofit" || type=="for-profit"){
                                 createLine("private-"+type, currentDollarType, currentDegreeLength);
-                                console.log("before");
-                                addTuitionLine(currentSelectedYear, type);
-                                console.log("after");
+                                // updateTuitionLine(currentSelectedYear, type);
                             }
                             else{
                                 createLine(type, currentDollarType, currentDegreeLength);
-                                addTuitionLine(currentSelectedYear, type);
+                                // updateTuitionLine(currentSelectedYear, type);
                             }
                         }
                         else {
@@ -473,23 +475,51 @@
                 })
 
                 // line chart hover
+                let barYearLabel = lineChartArea.append("text")
+                                            .attr("x", 90)
+                                            .attr("y", 60)
+                                            .attr("font-size", 22)
+                                            .style("font-weight", "bold");
                 let barLabel = lineChartArea.append("text")
                                             .attr("x", 10)
-                                            .attr("y", 50)
-                                            .attr("font-size", 20);
+                                            .attr("y", 80)
+                                            .attr("font-size", 20)
+                                            .style("font-weight", "bold");
+                let tuitionLabel = lineChartArea.append("text")
+                                            .attr("x", 10)
+                                            .attr("y", 105)
+                                            .attr("font-size", 20)
+                                            .style("font-weight", "bold");
+
+                let circle = ratioChartArea.append("circle")
+                                           .attr("fill", lineColorScale("all"))
+                                           .attr("r", 7)
+                                           .attr("visibility", "hidden");
 
                 lineChartArea.selectAll("rect").on("mouseover", function(event, d){
                     d3.select(this)
                       .attr("stroke", "#bab8b8")
                       .attr("stroke-width", 2);
-                    barLabel.text(d.Year+": $"+d[currentDollarType+"_thirdQuintile"])
-                            .raise();
+                    barYearLabel.text(d.Year+":");
+                    barLabel.text("Average Income: $"+d[currentDollarType+"_thirdQuintile"]);
+                    let hoveredTuition = d3.filter(tuition, t=> t.year == d.Year & t.institution_type == "all" & t.dollar_type == currentDollarType);
+                    tuitionLabel.text("Average Tuition: $"+hoveredTuition[0].four_and_two_year);
+
+                    // add circle
+                    let selectedRatio = d3.filter(currentRatios, r=> r.year == d.Year);
+                    circle.attr("cx", ratioYearScale(d.Year))
+                          .attr("cy", ratioScale(selectedRatio[0].ratio))
+                          .attr("visibility", "visible");
+
                 });
 
                 lineChartArea.selectAll("rect").on("mouseout", function(){
                     d3.select(this)
                       .attr("stroke", "none");
                     barLabel.text("");
+                    barYearLabel.text("");
+                    tuitionLabel.text("");
+                    circle.attr("visibility", "hidden");
                 });
 
                 // Line Chart Bonus
@@ -530,16 +560,16 @@
                 let percentLabel = lineBChartArea.append("text");
 
                 lineChartArea.selectAll("rect").on("click", function(event, d){
-                    console.log(d);
+                    // console.log(d);
                     updateDash(this, d);
                     currentSelectedYear = d;
 
                 })
 
                 function updateDash(This, d){
-                    console.log("d");
-                    console.log(d);
-                    console.log(This);
+                    // console.log("d");
+                    // console.log(d);
+                    // console.log(This);
                     if (This!=undefined){
                         let selectedRect = d3.select(This);
                         //if year is already selected
@@ -628,7 +658,7 @@
                     lineBChartArea.selectAll("rect").on("mouseover", function(event){
 
                         let rectClass = d3.select(this).attr("class");
-                        console.log(d);
+                        // console.log(d);
                         d3.select(this).attr("stroke", "black")
                                     .attr("stroke-width", 2);
                         let barIncome = d[currentDollarType+"_"+rectClass];
@@ -654,28 +684,42 @@
                 }
 
                 // add additional tuition lines
-                function addTuitionLine(year, type){
-                    console.log("in function");
-                    selectedYearTuition = tuition.filter(t=> t.year == year & t.institution_type == type & t.dollar_type == currentDollarType);
-                    console.log(lineBChartArea.select("#tuitionLine"+type));
+                // function updateTuitionLine(year, type){
+                //     console.log("in function");
+                //     console.log(year);
+                //     console.log(type);
+                //     if (type == "nonprofit" || type == "for-profit"){
+                //         selectedYearTuition = tuition.filter(t=> t["year"] == year.Year & t.institution_type == ("private-"+type) & t.dollar_type == currentDollarType);
+                //     }
+                //     else{
+                //         selectedYearTuition = tuition.filter(t=> t["year"] == year.Year & t.institution_type == type & t.dollar_type == currentDollarType);
+                //     }
+                    
+                //     console.log(selectedYearTuition);
 
-                    if (lineBChartArea.select("#tuitionLine"+type)==undefined){
-                        console.log("inside if");
-                        lineBChartArea.append("line")
-                                .attr("x1", 0)
-                                .attr("x2", lBchartWidth)
-                                .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                                .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                                .attr("stroke", lineColorScale(type))
-                                .attr("stroke-width", 3)
-                                .attr("id", "tuitionLine"+type);
-                    }
-                    else{
-                        d3.select("#tuitionLine"+type)
-                        .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
-                        .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year));
-                    }
-                }
+                //     if (lineBChartArea.select("#tuitionLine"+type)[0]==undefined){
+                //         console.log("inside if");
+                //         lineBChartArea.append("line")
+                //                 .attr("x1", 0)
+                //                 .attr("x2", lBchartWidth)
+                //                 .attr("y1", dollarBScale(selectedYearTuition[0].four_and_two_year))
+                //                 .attr("y2", dollarBScale(selectedYearTuition[0].four_and_two_year))
+                //                 .attr("stroke", function(){
+                //                     if(type == "nonprofit" || type == "for-profit"){
+                //                         console.log("in color if");
+                //                         return lineColorScale("private-"+type);
+                //                     }
+                //                     else{return lineColorScale(type)}
+                //                 })
+                //                 .attr("stroke-width", 3)
+                //                 .attr("id", "tuitionLine"+type);
+                //     }
+                //     else{
+                //         d3.select("#tuitionLine"+type)
+                //         .attr("y1", t=> dollarBScale(selectedYearTuition[0].four_and_two_year))
+                //         .attr("y2", t=> dollarBScale(selectedYearTuition[0].four_and_two_year));
+                //     }
+                // }
 
                 // ratio chart
 
@@ -712,6 +756,8 @@
 
                 // collect ratios
 
+                let currentRatios = '';
+
                 function updateRatio(){
                     deleteRatioLine();
                     let ratios = [];
@@ -738,6 +784,8 @@
                                 .attr("stroke-width", 3)
                                 .attr("d", ratioLine);
                     ratioChartArea.raise();
+
+                    currentRatios = ratios;
                 }
 
                 function deleteRatioLine() {
