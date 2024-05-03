@@ -154,6 +154,7 @@
 
             <div id="vis3_text">
                 <h3 id="school_info"></h3>
+                <p id="pt_one_text"></p>
                 <p id="first"></p>
                 <p id="last"></p>
                 <p id="rank"></p>
@@ -694,7 +695,7 @@
                 //     else{
                 //         selectedYearTuition = tuition.filter(t=> t["year"] == year.Year & t.institution_type == type & t.dollar_type == currentDollarType);
                 //     }
-                    
+
                 //     console.log(selectedYearTuition);
 
                 //     if (lineBChartArea.select("#tuitionLine"+type)[0]==undefined){
@@ -933,6 +934,7 @@
                         }
                     });
 
+
                     bottomAxisGroup.call(ivyBottomAxis);
 
                     ivyChartArea.raise();
@@ -996,11 +998,23 @@
                             d3.select("#rank").text('');
                         }
 
+                        if (income_bins[selectedOption] === "Top 0.1%" || income_bins[selectedOption] === "Top 1%") {
 
-                      Label.text((d[selectedOption] * 100).toFixed(2) + "%")
-                          .attr("x", schoolScale(d.name) + 6)
-                          .attr("y", percentScale(d[selectedOption])-5)
-                          .raise();
+                            //&& entry.par_income_lab === "Top 0.1%"
+                            console.log(d.name)
+                            let matchSchool = attendStats.filter(entry => entry.name == d.name);
+                            console.log(matchSchool);
+                            // let attendValue = matchSchool[0].attend;
+                            //
+                            // d3.select("#pt_one_text").text("Attendance for " + d.name + " in " + income_bins[selectedOption] + ": " + attendValue);
+                        };
+
+
+
+                        Label.text((d[selectedOption] * 100).toFixed(2) + "%")
+                            .attr("x", schoolScale(d.name) + 6)
+                            .attr("y", percentScale(d[selectedOption])-5)
+                            .raise();
                     });
 
                     ivyChartArea.selectAll("rect").on("mouseout", function(event, d){
