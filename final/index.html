@@ -101,12 +101,17 @@
                 width: 420px;
             }
 
-            .vis4 {
+            .vis4, #vis3_text {
                 width: 400px;
                 padding-left: 40px;
                 padding-top: 0px;
                 margin-top: 0px;
             }
+
+            #vis3_text {
+                width: 300px;
+            }
+
 
             #instructions {
                 margin-top: 0px;
@@ -162,14 +167,24 @@
             </div>
             <svg width="800" height="600" id="ivy-main"></svg>
 
+            <div id="vis3_text">
+                <h3 id="school_info"></h3>
+                <p id="first"></p>
+                <p id="last"></p>
+                <p id="rank"></p>
+                <p><i>All ranks are relative to peer institutions, with rank 1
+                being the school that has accepted the highest proportion of students from the relevant income group.</i><p>
+            </div>
+
             <div id="vis4">
                 <h3 id="vis4_title" class="title"></h2>
                 <svg width="400" height="300" id="ivy-bonus"></svg>
                 <p class="vis4"><i>Note: Q1 corresponds to the lowest income quintile, and Q5 corresponds to the highest.</i></p>
                 <p class="vis4" id="q_popup"></p>
-                <p class="vis4" id="explanation"><i>All ranks are relative to peer institutions, with rank 1
+                <!-- <p class="vis4" id="explanation"><i>All ranks are relative to peer institutions, with rank 1
                 being the school that has accepted the highest proportion of students from the relevant income group.</i><p>
-            </div>
+            </div> -->
+
         </div>
 
 
@@ -608,9 +623,9 @@
                         };
                     }
 
-                    if (d!='' & d != undefined){
+                    if (d!=''){
                         lineBonusTitle.text("Income by Quintile for "+ d["Year"].toString());
-                    
+
 
                         //name mappings
                         var quintileMappings = {
@@ -977,15 +992,57 @@
                     //
                     let Label = ivyChartArea.append("text");
 
+                    function findExtremeSchool(selectedOption, isHighest) {
+                        let extremeValue = isHighest ? -Infinity : Infinity;
+                        let extremeSchool = '';
+
+                        parentBins.forEach(d => {
+                            if ((isHighest && d[selectedOption] > extremeValue) && d.name !== 'National Avg' ||
+                            (!isHighest && d[selectedOption] < extremeValue) && d.name !== 'National Avg') {
+                                extremeValue = d[selectedOption];
+                                extremeSchool = d.name;
+                            }
+                        });
+
+                        return extremeSchool;
+                    }
+
+                    function ivyRank(school, selectedOption) {
+                        let sortedData = parentBins.filter(d => d.name !== 'National Avg').sort((a, b) => b[selectedOption] - a[selectedOption]);
+                        let ivyRank = sortedData.findIndex(d => d.name === school) + 1;
+                        return ivyRank;
+                    }
+
+                    let highest = findExtremeSchool(selectedOption, true);
+                    console.log(highest);
+                    let lowest = findExtremeSchool(selectedOption, false);
+                    console.log(lowest);
+
+                    // d3.select("#first").text("Greatest Proportion of Students Belonging to the " + income_bins[selectedOption] + ": " + highest);
+                    d3.select("#first").text("Rank #1: " + highest);
+                    d3.select("#last").text("Rank #12: " + lowest);
+                    d3.select("#school_info").text(income_bins[selectedOption] + " Breakdown");
+
+
+
                     ivyChartArea.selectAll("rect").on("mouseover", function(event, d){
                         d3.select(this)
-                          .attr("stroke", "black")
-                          .attr("stroke-width", 2);
+                            .attr("stroke", "black")
+                            .attr("stroke-width", 2);
 
-                          Label.text((d[selectedOption] * 100).toFixed(2) + "%")
-                              .attr("x", schoolScale(d.name) + 6)
-                              .attr("y", percentScale(d[selectedOption])-5)
-                              .raise();
+                        let mainRank = ivyRank(d.name, selectedOption);
+                        console.log(mainRank);
+                        if (d.name !== 'National Avg') {
+                            d3.select("#rank").text(`Rank of ${d.name}: ${mainRank}/12`);
+                        } else {
+                            d3.select("#rank").text('');
+                        }
+
+
+                      Label.text((d[selectedOption] * 100).toFixed(2) + "%")
+                          .attr("x", schoolScale(d.name) + 6)
+                          .attr("y", percentScale(d[selectedOption])-5)
+                          .raise();
                     });
 
                     ivyChartArea.selectAll("rect").on("mouseout", function(event, d){
@@ -994,6 +1051,7 @@
                           .attr("stroke-width", 0);
 
                           Label.text("");
+                          d3.select("#rank").text('');
                     });
 
 
@@ -1013,6 +1071,7 @@
 
 
                 let previousClickedRect = null;
+                // d3.select("#vis3_text").style("display", "block");
 
 
                 ivyChartArea.selectAll("rect")
@@ -1030,6 +1089,8 @@
 
                             previousClickedRect = null;
 
+                            d3.select("#vis3_text").style("display", "block");
+
                         } else {
 
                             previousClickedRect = d;
@@ -1038,6 +1099,7 @@
                                 .style("display", "flex");
                             d3.select("#vis4_title")
                                 .style("display", "block");
+                            d3.select("#vis3_text").style("display", "none");
 
                             d3.select(this)
                                 .attr("fill-opacity", 1);
@@ -1161,6 +1223,7 @@
                             .attr("fill-opacity", 1);
 
                         ivyBChart.selectAll("rect").remove();
+                        d3.select("#vis3_text").style("display", "block");
 
 
                         d3.select("#vis4").style("display", "none");
