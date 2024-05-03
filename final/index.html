@@ -126,7 +126,7 @@
                 margin: 1px;
             }
 
-            
+
 
 
 
@@ -169,12 +169,12 @@
 
             <div id="vis3_text">
                 <h3 id="school_info"></h3>
-                <p id="pt_one_text"></p>
                 <p id="first"></p>
                 <p id="last"></p>
                 <p id="rank"></p>
                 <p><i>All ranks are relative to peer institutions, with rank 1
                 being the school that has accepted the highest proportion of students from the relevant income group.</i><p>
+                <p id="pt_one_text"></p>
             </div>
 
             <div id="vis4">
@@ -249,7 +249,7 @@
                 let parentBins = await d3.csv("parent_incomes.csv", d3.autoType);
                 console.log(parentBins);
 
-                let attendStats = await d3.csv("top139_attend.csv", d3.autoType);
+                let attendStats = await d3.csv("attend.csv", d3.autoType);
                 console.log(attendStats);
 
                 // income and year extents and scales
@@ -407,7 +407,7 @@
                     addSelectedLines();
                     updateRatio();
                     updateDash(undefined, currentSelectedYear);
-                    
+
                 })
 
                 d3.select("#adjustedButton").on("click", function(){
@@ -417,7 +417,7 @@
                     addSelectedLines();
                     updateRatio();
                     updateDash(undefined, currentSelectedYear);
-                    
+
                 })
 
                 // checkbox interactivity
@@ -592,7 +592,7 @@
                     // console.log(d);
                     currentSelectedYear = d;
                     updateDash(this, currentSelectedYear);
-                    
+
 
                 })
 
@@ -668,9 +668,9 @@
                     // add tuition line
 
                     let selectedYearTuition = tuition.filter(t=> t.year == d.Year & t.institution_type == "all" & t.dollar_type == currentDollarType);
-                    
+
                     if (d!='' & d != undefined){
-                        
+
                         if (!tuitionLine){
                             lineBChartArea.append("line")
                                     .attr("x1", 0)
@@ -797,7 +797,7 @@
 
                 // collect ratios
 
-                
+
 
                 let currentRatios = '';
 
@@ -1040,16 +1040,25 @@
                             d3.select("#rank").text('');
                         }
 
-                        if (income_bins[selectedOption] === "Top 0.1%" || income_bins[selectedOption] === "Top 1%") {
 
-                            //&& entry.par_income_lab === "Top 0.1%"
-                            console.log(d.name)
-                            let matchSchool = attendStats.filter(entry => entry.name == d.name);
-                            console.log(matchSchool);
-                            // let attendValue = matchSchool[0].attend;
-                            //
-                            // d3.select("#pt_one_text").text("Attendance for " + d.name + " in " + income_bins[selectedOption] + ": " + attendValue);
-                        };
+                        if (income_bins[selectedOption] === "Top 0.1%") {
+                            let matchSchool = attendStats.filter(entry => entry.name === d.name && entry.par_income_lab === "Top 0.1");
+                            if (matchSchool.length > 0) {
+                                let attendValue = (matchSchool[0].attend * 100).toFixed(2);
+                                d3.select("#pt_one_text").text("About "+ attendValue + "% of all students belonging to the " +
+                                 income_bins[selectedOption] + " applying to colleges in a given year attend " + d.name + ".");
+                            }
+                        }
+
+                        // For par_income_lab == "Top 1%"
+                        if (income_bins[selectedOption] === "Top 1%") {
+                            let matchSchool = attendStats.filter(entry => entry.name === d.name && entry.par_income_lab === "Top 1");
+                            if (matchSchool.length > 0) {
+                                let attendValue = (matchSchool[0].attend * 100).toFixed(2);
+                                d3.select("#pt_one_text").text("About "+ attendValue + "% of all students belonging to the " +
+                                 income_bins[selectedOption] + " applying to colleges in a given year attend " + d.name + ".");
+                            }
+                        }
 
 
 
@@ -1066,6 +1075,7 @@
 
                           Label.text("");
                           d3.select("#rank").text('');
+                          d3.select("#pt_one_text").text('');
                     });
 
 
