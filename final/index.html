@@ -117,8 +117,23 @@
                 margin-top: 0px;
             }
 
-            button:active, button:focus {
-                background-color: rgba(0, 0, 0, 0.149);
+            button.mainb {
+              background-color: rgba(0, 0, 0, 0.149);
+              color: black;
+              padding: 10px 20px;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+              margin-bottom: 10px;
+              font-family: 'Times New Roman', Times, serif;
+            }
+
+            button.mainb:hover {
+                background-color: darkgray;
+            }
+
+            .mainb.darkened {
+                background-color: darkgray;
                 outline: 2px solid black;
             }
 
@@ -361,8 +376,8 @@
 
                 filterPanel.append("h3").text("Dollar Value");
                 let buttonContainer = filterPanel.append("g").attr("class", "buttonContainer");
-                buttonContainer.append("button").text("Current Dollars").attr("id", "currentButton");
-                buttonContainer.append("button").text("2021 Adjusted Dollars").attr("id", "adjustedButton");
+                buttonContainer.append("button").text("Current Dollars").attr("id", "currentButton").attr("class", "mainb");
+                buttonContainer.append("button").text("2021 Adjusted Dollars").attr("id", "adjustedButton").attr("class", "mainb");
 
                 filterPanel.append("h3").text("Institution Type");
                 let institutionInputs = filterPanel.append("div").attr("id", "institutionInputs");
@@ -399,24 +414,35 @@
                 })
                 d3.select("#check2All").property("checked", true);
 
+                var currentButton = d3.select("#currentButton");
+                var adjustedButton = d3.select("#adjustedButton");
+
+                function toggleDarkened(button) {
+                    currentButton.classed("darkened", false);
+                    adjustedButton.classed("darkened", false);
+                    button.classed("darkened", true);
+                }
+
                 // button interactivity
-                d3.select("#currentButton").on("click", function(){
+                currentButton.on("click", function(){
                     currentDollarType = "current";
                     deleteAllLines();
                     updateBars(currentDollarType);
                     addSelectedLines();
                     updateRatio();
                     updateDash(undefined, currentSelectedYear);
+                    toggleDarkened(currentButton);
 
                 })
 
-                d3.select("#adjustedButton").on("click", function(){
+                adjustedButton.on("click", function(){
                     currentDollarType = "adjusted";
                     deleteAllLines();
                     updateBars(currentDollarType);
                     addSelectedLines();
                     updateRatio();
                     updateDash(undefined, currentSelectedYear);
+                    toggleDarkened(adjustedButton);
 
                 })
 
