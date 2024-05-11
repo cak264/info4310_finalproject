@@ -557,6 +557,7 @@
                                            .attr("r", 7)
                                            .attr("visibility", "hidden");
                 let circleLabel = ratioChartArea.append("text");
+                let circlePresent = false;
 
                 lineChartArea.selectAll("rect").on("mouseover", function(event, d){
                     d3.select(this)
@@ -647,6 +648,7 @@
                             lineBChart.attr("visibility", "hidden");
                             circleOutline.attr("visibility", "hidden");
                             circleLabel.text("");
+                            circlePresent = false;
                         }
                         else{
                             lineChartArea.selectAll("rect").attr("fill", "#e0e0e0");
@@ -654,13 +656,27 @@
                             lineBChart.attr("visibility", "visible");
                             // circle outline
                             let selectedRatio = d3.filter(currentRatios, r=> r.year == d.Year);
+                            console.log("selectedRatio");
+                            console.log(selectedRatio);
                             circleOutline.attr("cx", ratioYearScale(d.Year))
                                         .attr("cy", ratioScale(selectedRatio[0].ratio))
                                         .attr("visibility", "visible");
                             circleLabel.attr("x", ratioYearScale(d.Year)-25)
                                        .attr("y", ratioScale(selectedRatio[0].ratio)-15)
                                        .text(selectedRatio[0].ratio.toString().substring(0, 5));
+                            circlePresent = true;
                         };
+                    } else if (circlePresent){
+                        console.log("circle needs to be moved");
+                        let selectedRatio = d3.filter(currentRatios, r=> r.year == d.Year);
+                        console.log("selectedRatio");
+                        console.log(selectedRatio);
+                        circleOutline.attr("cx", ratioYearScale(d.Year))
+                                    .attr("cy", ratioScale(selectedRatio[0].ratio))
+                                    .attr("visibility", "visible");
+                        circleLabel.attr("x", ratioYearScale(d.Year)-25)
+                                    .attr("y", ratioScale(selectedRatio[0].ratio)-15)
+                                    .text(selectedRatio[0].ratio.toString().substring(0, 5));
                     }
 
                     if (d!=''){
@@ -867,7 +883,9 @@
                                 .attr("d", ratioLine);
                     ratioChartArea.raise();
 
-                    currentRatios = ratios;
+                    currentRatios = ratios
+                    console.log("currentRatios");
+                    console.log(currentRatios);
                 }
 
                 function deleteRatioLine() {
