@@ -33,6 +33,7 @@
 
             #vis1 #filters {
                 margin-left: 30px;
+                margin-top: -30px;
             }
 
             #institutionInputs, #degreeInputs, #binInputs {
@@ -141,7 +142,13 @@
                 margin: 1px;
             }
 
+            #vis1Description {
+                width: 200px;
+            }
 
+            .vis1Bar, .ivy_rect, input:hover {
+                cursor: pointer;
+            }
 
 
 
@@ -160,14 +167,10 @@
                 <g id="filters"></g>
                 <svg width="800" height="600" id="line-chart"></svg>
                 <div id="bonus-charts">
-                    <svg width="400" height="350" id="line-chart-bonus"></svg>
+                    <svg width="400" height="375" id="line-chart-bonus"></svg>
                     <svg width="400" height="250" id="ratio-chart"></svg>
                 </div>
             </div>
-        </div>
-
-        <div id="vis2">
-
         </div>
 
         <h2 id="vis3_title" class="title"></h2>
@@ -217,7 +220,7 @@
             let lineBChart = d3.select("#line-chart-bonus");
             const lc_Bwidth = lineBChart.attr("width");
             const lc_Bheight= lineBChart.attr("height");
-            const lc_Bmargins={top: 20, right: 10, bottom: 50, left: 60};
+            const lc_Bmargins={top: 40, right: 10, bottom: 50, left: 60};
             const lBchartWidth = lc_Bwidth - lc_Bmargins.left - lc_Bmargins.right;
             const lBchartHeight = lc_Bheight - lc_Bmargins.top - lc_Bmargins.bottom;
             const lineBChartArea = lineBChart.append("g")
@@ -373,6 +376,10 @@
                 // adding inputs to filter panel
                 let filterPanel = d3.select("#filters");
                 filterPanel.append("h2").text("University Details");
+
+                filterPanel.append("p")
+                           .attr("id", "vis1Description")
+                           .html("<b>Hover</b> over a bar to see the average income and college tuition for each year, and <b>click</b> to see the distribution of the average income per quintile compared to the average tuition for the selected year.");
 
                 filterPanel.append("h3").text("Dollar Value");
                 let buttonContainer = filterPanel.append("g").attr("class", "buttonContainer");
@@ -613,6 +620,12 @@
                                                    .style("font-size", 20)
                                                    .style("font-weight", "bold");
                 let percentLabel = lineBChartArea.append("text");
+                let lineBonusInstructions = lineBChart.append("text")
+                                                   .attr("x", 30)
+                                                   .attr("y", 33)
+                                                   .style("font-size", 12)
+                                                   .style("font-style", "italic")
+                                                   .text("Hover to see what percentage of income tuition makes up for each quintile");
 
                 lineChartArea.selectAll("rect").on("click", function(event, d){
                     // console.log(d);
@@ -699,7 +712,7 @@
 
                         if (!tuitionLine){
                             lineBChartArea.append("line")
-                                    .attr("x1", 0)
+                                    .attr("x1", -10)
                                     .attr("x2", lBchartWidth)
                                     .attr("y1", t=> dollarBScale(selectedYearTuition[0][currentDegreeLength]))
                                     .attr("y2", t=> dollarBScale(selectedYearTuition[0][currentDegreeLength]))
