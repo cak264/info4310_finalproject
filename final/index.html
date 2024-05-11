@@ -98,8 +98,12 @@
 
             #bonus-charts {
                 position: relative;
-                left: 10px;
+                left: -10px;
                 width: 420px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
             }
 
             .vis4, #vis3_text {
@@ -225,7 +229,7 @@
             const lBchartHeight = lc_Bheight - lc_Bmargins.top - lc_Bmargins.bottom;
             const lineBChartArea = lineBChart.append("g")
                                            .attr("transform", `translate(${lc_Bmargins.left}, ${lc_Bmargins.top})`);
-            lineBChart.attr("visibility", "hidden");
+            lineBChart.style("display", "none");
 
             let ratioChart = d3.select("#ratio-chart");
             const ratio_width = ratioChart.attr("width");
@@ -645,15 +649,17 @@
                         //if year is already selected
                         if (selectedRect.attr("fill")=="#bab8b8"){
                             d3.select(This).attr("fill", "#e0e0e0");
-                            lineBChart.attr("visibility", "hidden");
+                            //lineBChart.attr("visibility", "hidden");
                             circleOutline.attr("visibility", "hidden");
                             circleLabel.text("");
                             circlePresent = false;
+                            lineBChart.style("display", "none");
                         }
                         else{
                             lineChartArea.selectAll("rect").attr("fill", "#e0e0e0");
                             d3.select(This).attr("fill", "#bab8b8");
-                            lineBChart.attr("visibility", "visible");
+                            //lineBChart.attr("visibility", "visible");
+                            lineBChart.style("display", "inline");
                             // circle outline
                             let selectedRatio = d3.filter(currentRatios, r=> r.year == d.Year);
                             console.log("selectedRatio");
