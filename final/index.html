@@ -66,13 +66,14 @@
                 padding-top: 30px;
             }
 
-            #context {
-                width: 1000px;
-                text-align: center;
+            .context {
+                width: 800px;
+                /* text-align: center; */
                 position: relative;
                 left: 50%;
                 transform: translate(-50%);
-                top: 50px;
+                top: 25px;
+                font-size: 19px;
             }
 
 
@@ -87,6 +88,7 @@
 
             #vis1Container {
                 width: 1450px;
+                height: 600px;
                 position:relative;
                 top: 50px;
                 left: 50%;
@@ -162,19 +164,48 @@
 
         <h1 class="title">How Economically Accessible Are US Universities?</h1>
         <h3 id="head_h3" class="title">Cameron Kull, cak264 & Marie Williams, mcw242</h3>
-        <div id="context">
-            <p>A relevant conversation being had in the news today is one about access to higher education, and the colleges that fall into the Ivy+ category (Ivy League institutions, as well as the University of Chicago, Duke, Stanford, and MIT) especially receive this attention. Our goal is to enhance the public’s understanding of the socioeconomic (in)accessibility of higher learning by visualizing the relationship between change in mean income and change in tuition costs over time. Through interactivity, users will be able to explore how the tuition for  different types of institutions compare to one another, and attempt to pinpoint where the gap in accessibility began to widen.</p>
+        <div class="context">
+            <p>In the fabric of the American Dream, a college education has long been considered the golden ticket
+                to a brighter future. Earning a degree has traditionally signified not just knowledge acquisition,
+                but also upward mobility, access to higher-paying jobs, and the ability to achieve financial security.
+                This credential has been seen as the key to unlocking a life of opportunity and fulfilling one's full
+                potential. However, this ideal has become increasingly strained in recent decades. The cost of tuition
+                has skyrocketed, outpacing inflation and wages, leaving many questioning whether the American Dream
+                still requires a college degree, and if so, at what cost.</p>
+
+                <p>But just how much have costs increased in recent decades? Is this rise in costs consistent with
+                inflation? How has this rise in costs varied across different types of institutions, and how does
+                average tuition compare to the average American's income? We invite readers to develop their own
+                answers to the above questions through exploration of the following dashboard.</p>
         </div>
 
-        <div id="vis1Container" style="border: 1px solid black">
+        <div id="vis1Container">
             <div id="vis1">
                 <g id="filters"></g>
+                <!-- style="border: 1px solid black" -->
                 <svg width="800" height="600" id="line-chart"></svg>
                 <div id="bonus-charts">
                     <svg width="400" height="375" id="line-chart-bonus"></svg>
                     <svg width="400" height="250" id="ratio-chart"></svg>
                 </div>
             </div>
+        </div>
+
+        <div class="context">
+            <p>Even within the realm of American higher education, certain univerisities hold a unique and
+                storied position. The elite status of these universities makes them especially sought after.
+                However, this prestige comes at a hefty price. Earlier this year, a few New England colleges
+                 - Boston University, Tufts, and Yale University - made headlines when they updated their cost
+                  of attendance for the 2024-2025 school year to exceed $90,000 for the first time.</p>
+            <p>These universities claim to have made efforts to make education more accessible by offering
+                financial aid to students, but are their student populations truly economically diverse?
+                Do they really reflect the broader American population? How do they compare to the national
+                average and their respective peers in terms of the proportion of students they admit from certain
+                income groups?</p>
+            <p>We again encourage readers to answer the questions above by interacting with the dashboard below.
+                Please note that we used the Ivy League universities and the University of Chicago, Stanford
+                University, Duke University, and the Massachusetts Institute of Technology as proxies for the
+                most top-tier universities in the U.S..</p>
         </div>
 
         <h2 id="vis3_title" class="title"></h2>
