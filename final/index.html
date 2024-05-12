@@ -83,12 +83,20 @@
 
             .buttonContainer {
                 display: flex;
-                flex-direction: column;
+                /* flex-direction: column; */
+                position: absolute;
+                top: 150px;
+                left: 300px;
+                width: 400px;
+            }
+
+            .buttonContainer button {
+                margin-right: 20px;
             }
 
             #vis1Container {
                 width: 1450px;
-                height: 600px;
+                height: 800px;
                 position:relative;
                 top: 50px;
                 left: 50%;
@@ -101,7 +109,9 @@
             #bonus-charts {
                 position: relative;
                 left: -10px;
+                top: -50px;
                 width: 420px;
+                height: 700px;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
@@ -146,6 +156,7 @@
 
             button {
                 margin: 1px;
+                font-size: 16px;
             }
 
             #vis1Description {
@@ -154,6 +165,49 @@
 
             .vis1Bar, .ivy_rect, input:hover {
                 cursor: pointer;
+            }
+
+            #vis1 {
+                position: relative;
+                top: 150px;
+            }
+
+            #dollarValueTitle {
+                position: absolute;
+                top: 100px;
+                left: 410px;
+            }
+
+            #degreeLengthTitle {
+                position: absolute;
+                top: 100px;
+                left: 850px;
+            }
+
+            #degreeInputs {
+                position: absolute;
+                top: 160px;
+                left: 730px;
+                display: flex;
+                flex-direction: row;
+            }
+
+            #degreeInputs input {
+                margin-left: 30px;
+            }
+
+            #degreeInputs label {
+                font-size: 17px;
+            }
+
+            #filters {
+                position: relative;
+                top: 50px;
+                left: -10px;
+            }
+
+            input[type=checkbox]{
+                width: 12px;
             }
 
 
@@ -180,12 +234,13 @@
         </div>
 
         <div id="vis1Container">
+            <h2 class="title" style="margin: 5px; margin-bottom: 10px;">Mean Income of Middle Class Americans and Mean College Tution Over Time</h2>
             <div id="vis1">
                 <g id="filters"></g>
                 <!-- style="border: 1px solid black" -->
                 <svg width="800" height="600" id="line-chart"></svg>
                 <div id="bonus-charts">
-                    <svg width="400" height="375" id="line-chart-bonus"></svg>
+                    <svg width="400" height="400" id="line-chart-bonus"></svg>
                     <svg width="400" height="250" id="ratio-chart"></svg>
                 </div>
             </div>
@@ -316,12 +371,12 @@
                 let lineColorScale = d3.scaleOrdinal().range(["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#e6ab02"]);
 
                 // title
-                let lineTitle = lineChart.append("text")
-                                                   .attr("x", 70)
-                                                   .attr("y", 17)
-                                                   .style("font-size", 23)
-                                                   .style("font-weight", "bold")
-                                                   .text("Mean Income of Middle Class Americans and College Tuition Over Time");
+                // let lineTitle = lineChart.append("text")
+                //                                    .attr("x", 70)
+                //                                    .attr("y", 17)
+                //                                    .style("font-size", 23)
+                //                                    .style("font-weight", "bold")
+                //                                    .text("Mean Income of Middle Class Americans and College Tuition Over Time");
                 // axes
                 let lineLeftAxis = d3.axisLeft(dollarScale);
                 lineChart.append("g")
@@ -410,14 +465,14 @@
 
                 // adding inputs to filter panel
                 let filterPanel = d3.select("#filters");
+                let vis1Container = d3.select("#vis1Container");
                 filterPanel.append("h2").text("University Details");
-
                 filterPanel.append("p")
                            .attr("id", "vis1Description")
                            .html("<b>Hover</b> over a bar to see the average income and college tuition for each year, and <b>click</b> to see the distribution of the average income per quintile compared to the average tuition for the selected year.");
 
-                filterPanel.append("h3").text("Dollar Value");
-                let buttonContainer = filterPanel.append("g").attr("class", "buttonContainer");
+                vis1Container.append("h3").text("Dollar Value").attr("id", "dollarValueTitle");
+                let buttonContainer = vis1Container.append("g").attr("class", "buttonContainer");
                 buttonContainer.append("button").text("Current Dollars").attr("id", "currentButton").attr("class", "mainb");
                 buttonContainer.append("button").text("2021 Adjusted Dollars").attr("id", "adjustedButton").attr("class", "mainb");
 
@@ -431,7 +486,7 @@
                         block.append("input").attr("type", "checkbox").attr("id", "check1"+type).style("margin-left", 20);
                         block.append("label").attr("for", "check1"+type)
                                             .text(type)
-                                            .style("color", lineColorScale("private-"+type.toLowerCase()))
+                                            .style("color", lineColorScale(type.toLowerCase()))
                                             .style("font-weight", "bold");
                     }
                     else{
@@ -446,8 +501,8 @@
                 });
                 d3.select("#check1All").property("checked", true);
 
-                filterPanel.append("h3").text("Degree Length");
-                let degreeInputs = filterPanel.append("div").attr("id", "degreeInputs");
+                vis1Container.append("h3").text("Degree Length").attr("id", "degreeLengthTitle");
+                let degreeInputs = vis1Container.append("div").attr("id", "degreeInputs");
                 let degree_types = ["All", "Four", "Two"];
                 degree_types.forEach(type => {
                     let block = degreeInputs.append("g");
@@ -498,7 +553,7 @@
                         let type = input.id.substring(6).toLowerCase();
                         if (inputSection == 1){
                             if (type=="nonprofit" || type=="for-profit"){
-                                createLine("private-"+type, currentDollarType, currentDegreeLength);
+                                createLine(type, currentDollarType, currentDegreeLength);
                                 // updateTuitionLine(currentSelectedYear, "private-"+type)
                             }
                             else{
@@ -514,20 +569,10 @@
                     let type = this.id.substring(6).toLowerCase();
                     if (inputSection == 1){
                         if (this.checked){
-                            if (type=="nonprofit" || type=="for-profit"){
-                                createLine("private-"+type, currentDollarType, currentDegreeLength);
-                                // updateTuitionLine(currentSelectedYear, type);
-                            }
-                            else{
                                 createLine(type, currentDollarType, currentDegreeLength);
-                                // updateTuitionLine(currentSelectedYear, type);
-                            }
                         }
                         else {
-                            if (type=="nonprofit" || type=="for-profit"){
-                                deleteLine("private-"+type, currentDollarType);
-                            }
-                            else{deleteLine(type, currentDollarType);}
+                            deleteLine(type, currentDollarType);
                         }
                     }
                     else{
