@@ -99,10 +99,10 @@
                 width: 1450px;
                 height: 750px;
                 position:relative;
-                top: 50px;
+                top: 0px;
                 left: 50%;
                 transform: translate(-50%);
-                margin-bottom: 100px;
+                margin-bottom: 50px;
                 padding-top: 50px;
                 padding-bottom: 20px;
             }
@@ -232,6 +232,8 @@
                 inflation? How has this rise in costs varied across different types of institutions, and how does
                 average tuition compare to the average American's income? We invite readers to develop their own
                 answers to the above questions through exploration of the following dashboard.</p>
+
+                <p><i>Note: Curent Dollars represent non-inflation adjusted dollars, whereas 2021 Adjusted Dollars represent the dollar values adjusted to what they would be worth in 2021. Also, Q1 is the quintile representing the lowest 20 percentiles of income in the United States, and Q5 represents the highest 20 percentiles of income.</i></p>
         </div>
 
         <div id="vis1Container">
@@ -248,7 +250,7 @@
         </div>
 
         <div class="context">
-            <p>Receiving a college education from any instituition has become increasingly burdensome to middle class American families, and this is even more true for the cost of private institutions. With the average private school tuition being over double that of the average public school tuition, attending one of these private institions is often eliminated for middle to lower class students due to the financial burden, or the student loan debt they acquire creates significant financial stress.</p>
+            <p>Receiving a college education from any instituition has become increasingly burdensome to middle class American families, and this is even more true for the cost of private institutions. With the average private school tuition being over double that of the average public school tuition, attending one of these private institions is often eliminated for middle to lower class students due to the financial burden, or the student loan debt they acquire creates significant financial stress after graduation. As you can see above, Private-Nonprofit institutions have become the most costly to students, including colleges such as Harvard University ($82,000), Stanford University ($92,000), and Cornell University ($88,000). </p>
             <p>Even within the realm of privatized American higher education, certain univerisities hold a unique and
                 storied position. The elite status of these universities makes them especially sought after.
                 However, this prestige comes at a hefty price. Earlier this year, a few New England colleges
@@ -479,9 +481,6 @@
                 filterPanel.append("p")
                            .attr("class", "vis1Description")
                            .html("<b>Hover</b> over a bar to see the average income and college tuition for each year, and <b>click</b> to see the distribution of the average income per quintile compared to the average tuition for the selected year.");
-                filterPanel.append("p")
-                           .attr("class", "vis1Description")
-                           .html("<i>Note: Curent Dollars represent non-inflation adjusted dollars, whereas 2021 Adjusted Dollars represent the dollar values adjusted to what they would be worth in 2021.</i>");
 
                 vis1Container.append("h3").text("Dollar Value").attr("id", "dollarValueTitle");
                 let buttonContainer = vis1Container.append("g").attr("class", "buttonContainer");
@@ -833,7 +832,7 @@
                                     .attr("y1", t=> dollarBScale(selectedYearTuition[0][currentDegreeLength]))
                                     .attr("y2", t=> dollarBScale(selectedYearTuition[0][currentDegreeLength]))
                                     .attr("stroke", lineColorScale("all"))
-                                    .attr("stroke-width", 3)
+                                    .attr("stroke-width", 2)
                                     .attr("id", "tuitionLineall");
                         }
                         else{
