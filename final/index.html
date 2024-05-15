@@ -160,7 +160,7 @@
                 font-size: 16px;
             }
 
-            #vis1Description {
+            .vis1Description {
                 width: 200px;
             }
 
@@ -235,7 +235,7 @@
         </div>
 
         <div id="vis1Container">
-            <h2 class="title" style="margin: 5px; margin-bottom: 10px;">Mean Income of Middle Class Americans and Mean College Tution Over Time</h2>
+            <h2 class="title" style="margin: 5px; margin-bottom: 10px;">Mean Income of Middle Class Americans and Mean College Tuition Over Time</h2>
             <div id="vis1">
                 <g id="filters"></g>
                 <!-- style="border: 1px solid black" -->
@@ -319,7 +319,7 @@
             let lineBChart = d3.select("#line-chart-bonus");
             const lc_Bwidth = lineBChart.attr("width");
             const lc_Bheight= lineBChart.attr("height");
-            const lc_Bmargins={top: 40, right: 10, bottom: 50, left: 60};
+            const lc_Bmargins={top: 60, right: 10, bottom: 50, left: 60};
             const lBchartWidth = lc_Bwidth - lc_Bmargins.left - lc_Bmargins.right;
             const lBchartHeight = lc_Bheight - lc_Bmargins.top - lc_Bmargins.bottom;
             const lineBChartArea = lineBChart.append("g")
@@ -477,12 +477,15 @@
                 let vis1Container = d3.select("#vis1Container");
                 filterPanel.append("h2").text("University Details");
                 filterPanel.append("p")
-                           .attr("id", "vis1Description")
+                           .attr("class", "vis1Description")
                            .html("<b>Hover</b> over a bar to see the average income and college tuition for each year, and <b>click</b> to see the distribution of the average income per quintile compared to the average tuition for the selected year.");
+                filterPanel.append("p")
+                           .attr("class", "vis1Description")
+                           .html("<i>Note: Curent Dollars represent non-inflation adjusted dollars, whereas 2021 Adjusted Dollars represent the dollar values adjusted to what they would be worth in 2021.</i>");
 
                 vis1Container.append("h3").text("Dollar Value").attr("id", "dollarValueTitle");
                 let buttonContainer = vis1Container.append("g").attr("class", "buttonContainer");
-                buttonContainer.append("button").text("Current Dollars").attr("id", "currentButton").attr("class", "mainb");
+                buttonContainer.append("button").text("Current Dollars").attr("id", "currentButton").attr("class", "mainb darkened");
                 buttonContainer.append("button").text("2021 Adjusted Dollars").attr("id", "adjustedButton").attr("class", "mainb");
 
                 filterPanel.append("h3").text("Institution Type");
@@ -711,11 +714,17 @@
                                                    .style("font-weight", "bold");
                 let percentLabel = lineBChartArea.append("text");
                 let lineBonusInstructions = lineBChart.append("text")
-                                                   .attr("x", 30)
-                                                   .attr("y", 33)
-                                                   .style("font-size", 12)
+                                                   .attr("x", 105)
+                                                   .attr("y", 43)
+                                                   .style("font-size", 14)
                                                    .style("font-style", "italic")
-                                                   .text("Hover to see what percentage of income tuition makes up for each quintile");
+                                                   .text("Hover to see what percentage of income");
+                lineBChart.append("text")
+                        .attr("x", 118)
+                        .attr("y", 57)
+                        .style("font-size", 14)
+                        .style("font-style", "italic")
+                        .text("tuition makes up for each quintile");
 
                 lineChartArea.selectAll("rect").on("click", function(event, d){
                     // console.log(d);
